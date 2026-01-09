@@ -16,6 +16,14 @@
 <body class="gradient-bg text-slate-900 min-h-screen p-4 md:p-8">
 
     <div class="max-w-6xl mx-auto">
+        <!-- 네비게이션/홈 버튼 -->
+        <div class="flex justify-start mb-6">
+            <a href="index.html" class="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-200 transition-all font-medium">
+                <i class="fas fa-home"></i>
+                홈으로 이동
+            </a>
+        </div>
+
         <!-- 헤더 섹션 -->
         <header class="text-center mb-8">
             <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-2 flex items-center justify-center gap-3">
@@ -72,7 +80,7 @@
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                 <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
                     <span class="w-1 h-6 bg-blue-500 rounded-full"></span>
-                    온실가스 농도 변화 ($CO_2$ & $CH_4$)
+                    온실가스 농도 변화 (CO₂ & CH₄)
                 </h3>
                 <div class="relative h-64">
                     <canvas id="gasChart"></canvas>
@@ -99,7 +107,7 @@
                         <i class="fas fa-wind text-blue-600 text-3xl opacity-80 animate-pulse"></i>
                     </div>
                     <h4 class="font-bold text-slate-700 mb-2 text-lg">2. 온실가스 이불</h4>
-                    <p class="text-sm text-slate-600 leading-relaxed">위 데이터의 $CO_2$와 $CH_4$가 지구를 감싸는 두꺼운 이불 역할을 합니다.</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">CO₂와 CH₄가 지구를 감싸는 두꺼운 이불 역할을 합니다.</p>
                 </div>
 
                 <div class="bg-orange-100 p-6 rounded-2xl border border-orange-200 shadow-inner flex flex-col items-center">
@@ -123,7 +131,7 @@
                     <h4 class="font-bold text-lg mb-3 border-b border-slate-600 pb-2">함께 만드는 탄소 중립 생활</h4>
                     <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-slate-300 text-sm">
                         <li class="flex items-center gap-2"><i class="fas fa-bicycle text-emerald-400"></i> <strong>교통:</strong> 가까운 거리는 걷거나 자전거 타기</li>
-                        <li class="fas fa-recycle text-emerald-400"></i> <strong>자원:</strong> 일회용품 대신 다회용 컵 사용하기</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-recycle text-emerald-400"></i> <strong>자원:</strong> 일회용품 대신 다회용 컵 사용하기</li>
                         <li class="flex items-center gap-2"><i class="fas fa-plug text-emerald-400"></i> <strong>에너지:</strong> 안 쓰는 전기 플러그 뽑아두기</li>
                         <li class="flex items-center gap-2"><i class="fas fa-utensils text-emerald-400"></i> <strong>식사:</strong> 잔반 남기지 않기 (메탄 발생 감소)</li>
                     </ul>
