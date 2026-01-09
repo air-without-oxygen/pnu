@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도로 유형별 교통사고 분석</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+        .stat-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+        .chart-container { position: relative; height: 300px; width: 100%; }
+    </style>
+</head>
+<body class="text-slate-900 pb-12">
+
+    <!-- 상단 네비게이션 -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 bg-slate-100 hover:bg-blue-600 hover:text-white px-4 py-2 rounded-full transition-all text-slate-600 font-bold text-sm">
+                <i class="fas fa-home"></i>
+                홈으로 이동
+            </a>
+            <span class="text-xs font-bold text-slate-400">교통안전 분석 시스템 v1.0</span>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 mt-8">
+        <!-- 헤더 -->
+        <header class="mb-10">
+            <div class="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-md mb-3">기획보도 분석</div>
+            <h1 class="text-3xl md:text-4xl font-black text-slate-800 leading-tight">
+                최근 5년 교통사고 ‘감소세’ 뚜렷...<br>
+                여전한 위험지대는 <span class="text-red-600 underline decoration-red-200">‘교차로’</span>
+            </h1>
+            <p class="text-slate-500 mt-4 flex items-center gap-2">
+                <i class="fas fa-user-edit"></i> 분석 기자: 김예찬
+            </p>
+        </header>
+
+        <!-- 주요 요약 지표 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="stat-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="bg-blue-50 p-3 rounded-xl text-blue-600">
+                        <i class="fas fa-road text-xl"></i>
+                    </div>
+                    <span class="text-emerald-500 text-xs font-bold"><i class="fas fa-arrow-down"></i> 감소중</span>
+                </div>
+                <h3 class="text-slate-500 text-sm font-bold">단일로 사고 건수</h3>
+                <p class="text-2xl font-black mt-1">연간 ~4,000건 감소</p>
+                <p class="text-xs text-slate-400 mt-2">도로 시설 개선 효과 반영</p>
+            </div>
+
+            <div class="stat-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="bg-red-50 p-3 rounded-xl text-red-600">
+                        <i class="fas fa-intersection text-xl"></i>
+                    </div>
+                    <span class="text-red-500 text-xs font-bold">주의 구간</span>
+                </div>
+                <h3 class="text-slate-500 text-sm font-bold">교차로 사고 비율</h3>
+                <p class="text-2xl font-black mt-1">압도적 빈도 발생</p>
+                <p class="text-xs text-slate-400 mt-2">복잡한 교통 흐름이 원인</p>
+            </div>
+
+            <div class="stat-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="bg-orange-50 p-3 rounded-xl text-orange-600">
+                        <i class="fas fa-skull-crossbones text-xl"></i>
+                    </div>
+                    <span class="text-red-600 text-xs font-bold">고위험</span>
+                </div>
+                <h3 class="text-slate-500 text-sm font-bold">철길건널목 치명률</h3>
+                <p class="text-2xl font-black mt-1">압도적 사망 위험</p>
+                <p class="text-xs text-slate-400 mt-2">사고 발생 시 대형 사고 직결</p>
+            </div>
+        </div>
+
+        <!-- 인터랙티브 차트 섹션 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="font-bold text-lg mb-6 flex items-center gap-2">
+                    <span class="w-1.5 h-6 bg-blue-600 rounded-full"></span>
+                    도로 유형별 사고 추이 (시뮬레이션)
+                </h3>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <p class="text-xs text-slate-400 mt-4 text-center">※ 보도자료 데이터를 기반으로 재구성한 추이 그래프입니다.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="font-bold text-lg mb-6 flex items-center gap-2">
+                    <span class="w-1.5 h-6 bg-red-600 rounded-full"></span>
+                    사고 빈도 vs 사망 위험도 분석
+                </h3>
+                <div class="chart-container">
+                    <canvas id="dangerChart"></canvas>
+                </div>
+                <p class="text-xs text-slate-400 mt-4 text-center">※ 원의 크기는 사고 발생 시의 치명률을 의미합니다.</p>
+            </div>
+        </div>
+
+        <!-- 상세 분석 내용 -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-blue-600 p-8 rounded-3xl text-white shadow-xl shadow-blue-100">
+                <h3 class="text-xl font-black mb-4"><i class="fas fa-check-circle mr-2"></i>단일로의 긍정적 변화</h3>
+                <p class="text-blue-100 leading-relaxed text-sm md:text-base">
+                    최근 5년간 단일로에서의 사고 감소세가 매우 뚜렷합니다. 매년 약 4,000건의 사고가 줄어들고 있으며, 사망자 수 또한 매년 100명 이상 감소하고 있습니다. 이는 <strong>안전 운전 캠페인</strong>과 <strong>도로 시설의 현대화</strong>가 실질적인 생명을 살리고 있음을 증명합니다.
+                </p>
+            </div>
+            <div class="bg-slate-800 p-8 rounded-3xl text-white shadow-xl shadow-slate-200">
+                <h3 class="text-xl font-black mb-4 text-red-400"><i class="fas fa-exclamation-triangle mr-2"></i>교차로의 지속적 위험</h3>
+                <p class="text-slate-300 leading-relaxed text-sm md:text-base">
+                    전체적인 사고는 줄어들고 있지만, 교차로는 여전히 가장 많은 사고가 발생하는 지점입니다. 여러 방향의 차량이 엉키고 보행자의 횡단이 잦기 때문에, 보행자와 운전자 모두 <strong>교차로 진입 시 일시정지 및 서행</strong>하는 습관이 무엇보다 중요합니다.
+                </p>
+            </div>
+        </section>
+
+        <!-- 행동 가이드 -->
+        <footer class="bg-white p-8 rounded-3xl border border-slate-200">
+            <h4 class="font-black text-xl mb-6 text-center">도로 위 생명을 지키는 안전 수칙</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-stopwatch"></i>
+                    </div>
+                    <h5 class="font-bold text-sm mb-1">교차로 서행</h5>
+                    <p class="text-xs text-slate-500">진입 전 반드시 감속</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-train"></i>
+                    </div>
+                    <h5 class="font-bold text-sm mb-1">건널목 일시정지</h5>
+                    <p class="text-xs text-slate-500">철길 앞 무조건 정지</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-walking"></i>
+                    </div>
+                    <h5 class="font-bold text-sm mb-1">보행자 우선</h5>
+                    <p class="text-xs text-slate-500">횡단보도 앞 보행자 보호</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h5 class="font-bold text-sm mb-1">규정 속도 준수</h5>
+                    <p class="text-xs text-slate-500">단일로 과속 금지</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 사고 추이 차트 (Trend Chart)
+        const ctxTrend = document.getElementById('trendChart').getContext('2d');
+        new Chart(ctxTrend, {
+            type: 'line',
+            data: {
+                labels: ['1년차', '2년차', '3년차', '4년차', '5년차'],
+                datasets: [
+                    {
+                        label: '교차로 사고',
+                        data: [150, 145, 142, 138, 135],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'transparent',
+                        borderWidth: 3,
+                        tension: 0.3
+                    },
+                    {
+                        label: '단일로 사고',
+                        data: [120, 110, 102, 95, 88],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'transparent',
+                        borderWidth: 3,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: { beginAtZero: false, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 위험도 버블 차트 (Danger Chart - Scatter/Bubble simulation)
+        const ctxDanger = document.getElementById('dangerChart').getContext('2d');
+        new Chart(ctxDanger, {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    {
+                        label: '교차로 (빈도 높음)',
+                        data: [{ x: 80, y: 40, r: 15 }],
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)'
+                    },
+                    {
+                        label: '단일로 (감소세)',
+                        data: [{ x: 50, y: 30, r: 10 }],
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)'
+                    },
+                    {
+                        label: '철길건널목 (고치명)',
+                        data: [{ x: 10, y: 90, r: 25 }],
+                        backgroundColor: 'rgba(249, 115, 22, 0.6)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    x: { 
+                        title: { display: true, text: '사고 발생 빈도' },
+                        min: 0, max: 100, grid: { display: false }
+                    },
+                    y: { 
+                        title: { display: true, text: '치명률 (위험도)' },
+                        min: 0, max: 100, grid: { color: '#f1f5f9' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
