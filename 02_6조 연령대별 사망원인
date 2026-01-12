@@ -1,0 +1,227 @@
+import React from 'react';
+import { Heart, AlertCircle, TrendingUp, Sun, CloudRain, Thermometer, Wind, Home, Activity } from 'lucide-react';
+
+// 원그래프(도넛 차트) 컴포넌트
+const DonutChart = ({ percent, colorClass, label }) => {
+  const radius = 36;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percent / 100) * circumference;
+
+  return (
+    <div className="relative flex flex-col items-center justify-center w-32 h-32">
+      <svg className="w-full h-full transform -rotate-90">
+        <circle
+          cx="64"
+          cy="64"
+          r={radius}
+          stroke="currentColor"
+          strokeWidth="8"
+          fill="transparent"
+          className="text-gray-200"
+        />
+        <circle
+          cx="64"
+          cy="64"
+          r={radius}
+          stroke="currentColor"
+          strokeWidth="8"
+          fill="transparent"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          className={colorClass}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-lg font-black text-gray-800">{percent}%</span>
+        <span className="text-[10px] font-bold text-gray-500 uppercase">{label}</span>
+      </div>
+    </div>
+  );
+};
+
+const App = () => {
+  const ageData = [
+    {
+      id: 'youth',
+      range: '10대 - 30대',
+      title: '청년기: 심리적 안전망의 필요성',
+      icon: <CloudRain className="w-8 h-8 text-blue-500" />,
+      mainCause: '고의적 자해 (자살)',
+      primaryPercent: 70.9,
+      stats: '20대 자살 비중 70.9% 달함',
+      description: '젊은 층에서는 정신건강과 밀접한 외부적 요인이 압도적입니다. 사회적 안전망과 심리적 지원이 절실한 시기입니다.',
+      color: 'bg-blue-50',
+      chartColor: 'text-blue-500'
+    },
+    {
+      id: 'middle',
+      range: '40대',
+      title: '중장년기: 건강 관리의 전환점',
+      icon: <Sun className="w-8 h-8 text-yellow-500" />,
+      mainCause: '자살(36.4%) vs 암(34.3%)',
+      primaryPercent: 36.4,
+      stats: '사망 원인의 패러다임 교차점',
+      description: '신체적 노화와 심리적 중압감이 교차하는 시기입니다. 간 질환과 심장 질환이 주요 원인으로 부상하기 시작합니다.',
+      color: 'bg-yellow-50',
+      chartColor: 'text-yellow-500'
+    },
+    {
+      id: 'late-middle',
+      range: '50대 - 60대',
+      title: '장년기: 질병 예방의 핵심기',
+      icon: <Wind className="w-8 h-8 text-orange-500" />,
+      mainCause: '악성신생물 (암)',
+      primaryPercent: 63.3,
+      stats: '60대 암 비중 63.3%까지 급증',
+      description: '암이 명실상부한 최대 원인이 됩니다. 정기적인 건강 검진과 체계적인 신체 관리가 생존의 핵심이 됩니다.',
+      color: 'bg-orange-50',
+      chartColor: 'text-orange-500'
+    },
+    {
+      id: 'elderly',
+      range: '70대 - 80대 이상',
+      title: '노년기: 만성 및 퇴행성 질환 관리',
+      icon: <Thermometer className="w-8 h-8 text-purple-500" />,
+      mainCause: '암, 폐렴, 심장질환',
+      primaryPercent: 31.7,
+      stats: '80세 이상 폐렴(22.9%) 급증',
+      description: '노환 관련 질환의 비중이 높아집니다. 폐렴과 알츠하이머병 등 퇴행성 및 감염성 질환에 대한 주의가 필요합니다.',
+      color: 'bg-purple-50',
+      chartColor: 'text-purple-500'
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
+      {/* Navigation / Home Button */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Activity className="w-6 h-6 text-blue-600" />
+            <span className="font-bold text-gray-800 tracking-tight">대한민국 사망 원인 통계</span>
+          </div>
+          <a 
+            href="index.html" 
+            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-all text-sm font-medium shadow-sm"
+          >
+            <Home className="w-4 h-4" />
+            홈으로 이동
+          </a>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-5xl mx-auto px-6 py-16 text-center">
+          <span className="inline-block px-3 py-1 mb-4 text-sm font-semibold text-red-600 bg-red-50 rounded-full">
+            2024 사회 통계 리포트
+          </span>
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">
+            대한민국 연령대별 <br/>
+            <span className="text-blue-600">사망 원인 정밀 분석</span>
+          </h1>
+          <p className="max-w-2xl mx-auto text-lg text-gray-600 leading-relaxed">
+            연령대에 따라 우리가 직면하는 삶의 위험 요소는 확연히 다릅니다. 
+            통계 데이터를 통해 본 우리 사회의 현주소와 건강 관리의 방향성.
+          </p>
+        </div>
+      </header>
+
+      {/* Main Analysis Section */}
+      <main className="max-w-5xl mx-auto px-6 py-12 pb-24">
+        <div className="grid md:grid-cols-2 gap-8">
+          {ageData.map((item) => (
+            <div 
+              key={item.id}
+              className={`${item.color} border border-white rounded-3xl p-8 transition-all hover:shadow-md duration-300`}
+            >
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">{item.range}</span>
+                  <h3 className="text-2xl font-bold mt-1 text-gray-800">{item.title}</h3>
+                </div>
+                <div className="p-3 bg-white rounded-2xl shadow-sm">
+                  {item.icon}
+                </div>
+              </div>
+
+              <div className="flex flex-col lg:flex-row gap-6 items-center lg:items-start mb-6">
+                <div className="flex-shrink-0">
+                   <DonutChart 
+                    percent={item.primaryPercent} 
+                    colorClass={item.chartColor} 
+                    label="1순위 비중"
+                  />
+                </div>
+                <div className="flex-1 space-y-4 w-full">
+                  <div className="bg-white/80 rounded-2xl p-4 border border-white/50 shadow-sm">
+                    <div className="flex items-center gap-2 mb-1">
+                      <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+                      <span className="text-[11px] font-bold text-gray-500 uppercase">사망 원인 1위</span>
+                    </div>
+                    <p className="text-lg font-black text-gray-900 leading-tight">{item.mainCause}</p>
+                  </div>
+
+                  <div className="bg-white/80 rounded-2xl p-4 border border-white/50 shadow-sm">
+                    <div className="flex items-center gap-2 mb-1">
+                      <TrendingUp className="w-3.5 h-3.5 text-blue-500" />
+                      <span className="text-[11px] font-bold text-gray-500 uppercase">통계 요약</span>
+                    </div>
+                    <p className="text-md font-bold text-gray-800">{item.stats}</p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-gray-600 leading-relaxed text-sm">
+                {item.description}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Child Mortality Note */}
+        <div className="mt-16 p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm">
+          <div className="flex flex-col md:flex-row gap-10 items-center">
+            <div className="flex-1">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-50 rounded-2xl mb-4">
+                <Heart className="w-6 h-6 text-pink-500" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-gray-800">
+                15세 미만 어린이 및 영유아
+              </h3>
+              <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+                성인과 달리 질병이나 사고보다는 선천적 요인이 큽니다. 출생전후기의 특정 병태(40.8%)와 
+                선천 기형 및 염색체 이상(23.2%)이 주된 원인으로 나타났습니다.
+              </p>
+              <div className="inline-block px-5 py-2.5 bg-pink-50 text-pink-600 rounded-xl text-sm font-bold">
+                영아 급사 증후군 7.4%
+              </div>
+            </div>
+            <div className="w-full md:w-2/5 flex flex-col items-center gap-4">
+               <div className="flex gap-4">
+                  <DonutChart percent={40.8} colorClass="text-pink-400" label="출생전후기" />
+                  <DonutChart percent={23.2} colorClass="text-pink-300" label="선천기형" />
+               </div>
+               <span className="text-xs font-medium text-gray-400">어린이 주요 사망 원인 비중</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Conclusion Footer */}
+        <footer className="mt-24 text-center border-t border-gray-100 pt-12">
+          <p className="text-sm text-gray-400 font-medium mb-4 tracking-tight">본 리포트는 통계청 연령별 사망원인 통계 자료를 시각화한 것입니다.</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {['#정신건강', '#자살예방', '#정기검진', '#사회안전망'].map(tag => (
+              <span key={tag} className="px-3 py-1 bg-gray-100 text-gray-400 rounded-lg text-xs font-semibold">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </footer>
+      </main>
+    </div>
+  );
+};
+
+export default App;
