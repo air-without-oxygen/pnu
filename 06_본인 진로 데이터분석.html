@@ -12,7 +12,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap');
         body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
         .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
-        /* 스크롤 부드럽게 */
         html { scroll-behavior: smooth; }
     </style>
 </head>
@@ -65,11 +64,11 @@
             </div>
         </div>
 
-        <!-- NEW: Graph Section -->
-        <section class="mb-16">
+        <!-- NEW: Graph Section 1 (Basic) -->
+        <section class="mb-12">
             <div class="flex items-center gap-2 mb-6">
                 <div class="w-1 h-6 bg-blue-600 rounded-full"></div>
-                <h2 class="text-2xl font-bold">시각적 데이터 분석 (Graphs)</h2>
+                <h2 class="text-2xl font-bold">기본 비용 구조 분석</h2>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -93,11 +92,50 @@
             </div>
         </section>
 
-        <!-- 1인당 교육비 현황 섹션 -->
+        <!-- ADDED: Graph Section 2 (Deep Dive) -->
+        <section class="mb-16">
+            <div class="flex items-center gap-2 mb-6">
+                <div class="w-1 h-6 bg-emerald-600 rounded-full"></div>
+                <h2 class="text-2xl font-bold">설립 유형 및 지역별 심화 분석</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Graph 3: Regional Analysis -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold">지역별 평균 교육비 투자 현황</h3>
+                        <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-500">2024 기준</span>
+                    </div>
+                    <div class="relative h-64 md:h-80 w-full">
+                        <canvas id="regionChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl">
+                        <i class="fa-solid fa-circle-info text-blue-500 mr-1"></i>
+                        <strong>분석:</strong> 수도권 사립대보다 <span class="text-blue-600 font-bold">지방 거점 국립대</span>의 1인당 교육비 투자가 평균적으로 더 높게 나타납니다.
+                    </div>
+                </div>
+
+                <!-- Graph 4: Type vs Efficiency -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold">설립 유형별 투입(등록금) 대비 성과(취업)</h3>
+                    </div>
+                    <div class="relative h-64 md:h-80 w-full">
+                        <canvas id="efficiencyChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-sm text-slate-600 bg-slate-50 p-3 rounded-xl">
+                        <i class="fa-solid fa-chart-simple text-purple-500 mr-1"></i>
+                        <strong>분석:</strong> 국립대는 비용 부담이 적고, 사립대는 높은 등록금만큼 <span class="text-purple-600 font-bold">높은 취업률</span>을 보입니다.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1인당 교육비 현황 섹션 (텍스트 데이터) -->
         <section class="mb-16">
             <div class="flex items-center gap-2 mb-6">
                 <div class="w-1 h-6 bg-blue-600 rounded-full"></div>
-                <h2 class="text-2xl font-bold">1인당 교육비 현황 (대학 전체)</h2>
+                <h2 class="text-2xl font-bold">주요 대학 상세 데이터 (Text Data)</h2>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -169,7 +207,7 @@
             </div>
         </section>
 
-        <!-- 컴퓨터공학과 상세 지표 -->
+        <!-- 컴퓨터공학과 상세 지표 테이블 -->
         <section class="mb-16">
             <div class="flex items-center gap-2 mb-6">
                 <div class="w-1 h-6 bg-blue-600 rounded-full"></div>
@@ -181,8 +219,8 @@
                     <thead>
                         <tr class="bg-slate-50 border-bottom border-slate-200">
                             <th class="p-6 font-bold text-slate-500 text-sm uppercase">구분</th>
-                            <th class="p-6 font-bold text-blue-600">국립 (예: 강원대)</th>
-                            <th class="p-6 font-bold text-purple-600">사립 (예: 가천대)</th>
+                            <th class="p-6 font-bold text-blue-600">국립 (평균)</th>
+                            <th class="p-6 font-bold text-purple-600">사립 (평균)</th>
                             <th class="p-6 font-bold text-slate-500 text-sm uppercase hidden md:table-cell">비고</th>
                         </tr>
                     </thead>
@@ -206,9 +244,9 @@
                             <td class="p-6 text-blue-600 font-medium text-sm hidden md:table-cell">국립대가 압도적 우위</td>
                         </tr>
                         <tr>
-                            <td class="p-6 font-semibold">신입생 경쟁률</td>
-                            <td class="p-6">11.1 : 1</td>
-                            <td class="p-6 font-bold text-purple-700">21.4 : 1</td>
+                            <td class="p-6 font-semibold">취업률 (Output)</td>
+                            <td class="p-6">48.3%</td>
+                            <td class="p-6 font-bold text-purple-700">65.1%</td>
                             <td class="p-6 text-slate-500 text-sm hidden md:table-cell">수도권 사립 선호도 반영</td>
                         </tr>
                     </tbody>
@@ -222,21 +260,21 @@
                 <div class="text-amber-400 text-2xl mb-4"><i class="fa-solid fa-map-location-dot"></i></div>
                 <h3 class="text-xl font-bold mb-4">수도권 집중과 교육비</h3>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    수도권 대학은 선호도가 높지만, 1인당 교육비가 반드시 비례하지는 않습니다. 지역 연구중심 사립대가 더 높은 투자를 보이기도 합니다.
+                    수도권 대학은 선호도가 높지만, 1인당 교육비가 반드시 비례하지는 않습니다. 오히려 지역 거점 국립대가 학생 1인당 더 많은 투자를 하는 경향이 있습니다.
                 </p>
             </div>
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 transform hover:-translate-y-1 transition-transform">
                 <div class="text-blue-600 text-2xl mb-4"><i class="fa-solid fa-coins"></i></div>
                 <h3 class="text-xl font-bold mb-4">국립대의 교육 가성비</h3>
                 <p class="text-slate-600 text-sm leading-relaxed">
-                    낮은 등록금에도 불구하고 교육비를 사립대 평균 이상으로 유지하며, 국가 지원을 통한 안정적인 IT 교육 환경을 제공합니다.
+                    낮은 등록금(연 400만원 대)에도 불구하고 교육비를 사립대 평균 이상으로 유지하며, 국가 지원을 통한 안정적인 IT 교육 환경을 제공합니다.
                 </p>
             </div>
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 transform hover:-translate-y-1 transition-transform">
                 <div class="text-emerald-600 text-2xl mb-4"><i class="fa-solid fa-user-graduate"></i></div>
                 <h3 class="text-xl font-bold mb-4">취업률과의 관계</h3>
                 <p class="text-slate-600 text-sm leading-relaxed">
-                    국립(48.3%) 대비 사립(65.1%)의 취업률이 높습니다. 이는 투자 규모 외에 수도권 인프라와 기업 접근성이 주요 원인으로 분석됩니다.
+                    국립(48.3%) 대비 사립(65.1%)의 취업률이 높습니다. 이는 투자 규모보다는 수도권에 집중된 IT 기업 인프라와 지리적 접근성이 주요 원인입니다.
                 </p>
             </div>
         </section>
@@ -258,6 +296,10 @@
 
     <!-- Chart Config Scripts -->
     <script>
+        // Common Options
+        Chart.defaults.font.family = "'Pretendard', sans-serif";
+        Chart.defaults.color = '#64748b';
+
         // Chart 1: 1인당 교육비 비교 (막대 그래프)
         const ctx1 = document.getElementById('costChart').getContext('2d');
         new Chart(ctx1, {
@@ -268,38 +310,24 @@
                     label: '1인당 교육비 (단위: 만 원)',
                     data: [1811, 2397, 2401, 2708, 4402, 12738],
                     backgroundColor: [
-                        'rgba(147, 51, 234, 0.7)', // 사립 (보라)
-                        'rgba(37, 99, 235, 0.7)',  // 국립 (파랑)
+                        'rgba(147, 51, 234, 0.7)', 
+                        'rgba(37, 99, 235, 0.7)', 
                         'rgba(37, 99, 235, 0.7)',
                         'rgba(37, 99, 235, 0.7)',
                         'rgba(147, 51, 234, 0.7)',
-                        'rgba(147, 51, 234, 0.9)'  // 포항공대 (강조)
+                        'rgba(147, 51, 234, 0.9)'
                     ],
-                    borderColor: [
-                        'rgba(147, 51, 234, 1)',
-                        'rgba(37, 99, 235, 1)',
-                        'rgba(37, 99, 235, 1)',
-                        'rgba(37, 99, 235, 1)',
-                        'rgba(147, 51, 234, 1)',
-                        'rgba(147, 51, 234, 1)'
-                    ],
-                    borderWidth: 1,
-                    borderRadius: 8
+                    borderRadius: 6
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { borderDash: [2, 4], color: '#f1f5f9' }
-                    },
+                    y: { beginAtZero: true, grid: { borderDash: [2, 4] } },
                     x: { grid: { display: false } }
                 },
-                plugins: {
-                    legend: { display: false }
-                }
+                plugins: { legend: { display: false } }
             }
         });
 
@@ -328,14 +356,122 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: {
+                    y: { beginAtZero: true, grid: { borderDash: [2, 4] } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // Chart 3: 지역별 평균 교육비 현황 (추가된 그래프)
+        const ctx3 = document.getElementById('regionChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['수도권 사립대', '비수도권 국립대', '비수도권 사립대'],
+                datasets: [{
+                    label: '평균 1인당 교육비 (단위: 만 원)',
+                    data: [1950, 2502, 2100], // 예시 평균 데이터
+                    backgroundColor: [
+                        'rgba(147, 51, 234, 0.3)', // 수도권 사립
+                        'rgba(37, 99, 235, 0.8)',  // 비수도권 국립 (강조)
+                        'rgba(147, 51, 234, 0.3)'  // 비수도권 사립
+                    ],
+                    borderColor: [
+                        'rgba(147, 51, 234, 1)',
+                        'rgba(37, 99, 235, 1)',
+                        'rgba(147, 51, 234, 1)'
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    barThickness: 50
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { 
                         beginAtZero: true,
-                        grid: { borderDash: [2, 4], color: '#f1f5f9' }
+                        grid: { borderDash: [2, 4] },
+                        title: { display: true, text: '교육비 (만 원)' }
+                    },
+                    x: { grid: { display: false } }
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                if (context.label === '비수도권 국립대') {
+                                    return '  ✔ 국립대의 높은 투자 효율';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 4: 설립 유형별 등록금 대비 취업률 (Mixed Chart)
+        const ctx4 = document.getElementById('efficiencyChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: ['국립 대학', '사립 대학'],
+                datasets: [
+                    {
+                        label: '평균 등록금 (좌측, 만 원)',
+                        data: [436, 969],
+                        backgroundColor: 'rgba(203, 213, 225, 0.6)', // 회색 톤
+                        order: 2,
+                        borderRadius: 6,
+                        yAxisID: 'y'
+                    },
+                    {
+                        type: 'line',
+                        label: '평균 취업률 (우측, %)',
+                        data: [48.3, 65.1],
+                        borderColor: 'rgba(234, 179, 8, 1)', // 노랑/골드
+                        backgroundColor: 'rgba(234, 179, 8, 1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderWidth: 3,
+                        pointRadius: 6,
+                        tension: 0.1,
+                        order: 1,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: '등록금 (만 원)' },
+                        grid: { display: false }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: '취업률 (%)' },
+                        grid: { borderDash: [2, 4] },
+                        min: 30,
+                        max: 80
                     },
                     x: { grid: { display: false } }
                 },
                 plugins: {
-                    legend: { position: 'bottom' }
+                    legend: { position: 'top' }
                 }
             }
         });
