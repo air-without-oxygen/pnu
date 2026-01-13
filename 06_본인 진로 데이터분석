@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>국·사립 대학별 컴퓨터공학과 교육비 분석</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap');
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+        /* 스크롤 부드럽게 */
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="text-slate-800" id="top">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 px-6 shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <!-- Home Button -->
+            <a href="#top" class="flex items-center gap-2 hover:text-blue-300 transition-colors">
+                <div class="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
+                    <i class="fa-solid fa-house text-lg"></i>
+                </div>
+                <span class="font-bold hidden md:inline">HOME</span>
+            </a>
+
+            <div class="text-right">
+                <div class="inline-block bg-blue-500 text-[10px] font-bold px-2 py-0.5 rounded-full mb-1 uppercase tracking-wider">Analysis Report</div>
+                <h1 class="text-lg md:text-xl font-bold">대학 교육비 분석</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Title Area -->
+    <div class="bg-slate-800 text-white py-16 px-6">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-3xl md:text-5xl font-bold mb-6 leading-tight">국·사립 대학별<br>컴퓨터공학과 교육비 및 격차 분석</h1>
+            <p class="text-slate-300 max-w-2xl mx-auto text-lg">2024-2025 공시 자료 기반 설립 유형별 투자 현황 데이터 리포트</p>
+        </div>
+    </div>
+
+    <main class="max-w-6xl mx-auto px-6 py-12 -mt-8">
+        
+        <!-- Quick Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 transform hover:-translate-y-1 transition-transform duration-300">
+                <div class="text-blue-600 mb-2"><i class="fa-solid fa-building-columns text-2xl"></i></div>
+                <div class="text-sm text-slate-500 font-medium">국립대학 특징</div>
+                <div class="text-xl font-bold mt-1">지역 거점 중심 균형 투자</div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 transform hover:-translate-y-1 transition-transform duration-300">
+                <div class="text-purple-600 mb-2"><i class="fa-solid fa-flask text-2xl"></i></div>
+                <div class="text-sm text-slate-500 font-medium">사립대학 특징</div>
+                <div class="text-xl font-bold mt-1">연구 중심 및 지역별 편차</div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 transform hover:-translate-y-1 transition-transform duration-300">
+                <div class="text-emerald-600 mb-2"><i class="fa-solid fa-chart-line text-2xl"></i></div>
+                <div class="text-sm text-slate-500 font-medium">핵심 분석</div>
+                <div class="text-xl font-bold mt-1">교육비 규모와 취업률 상관관계</div>
+            </div>
+        </div>
+
+        <!-- NEW: Graph Section -->
+        <section class="mb-16">
+            <div class="flex items-center gap-2 mb-6">
+                <div class="w-1 h-6 bg-blue-600 rounded-full"></div>
+                <h2 class="text-2xl font-bold">시각적 데이터 분석 (Graphs)</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Graph 1 -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold mb-4 text-center">주요 대학 1인당 교육비 비교</h3>
+                    <div class="relative h-64 md:h-80 w-full">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                    <p class="text-center text-xs text-slate-400 mt-2">* 단위: 만 원 / 포항공대는 별도 축 고려 필요하나 시각적 대비를 위해 포함</p>
+                </div>
+
+                <!-- Graph 2 -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <h3 class="text-lg font-bold mb-4 text-center">국·사립 컴퓨터공학과 비용 구조</h3>
+                    <div class="relative h-64 md:h-80 w-full flex justify-center">
+                        <canvas id="deptChart"></canvas>
+                    </div>
+                    <p class="text-center text-xs text-slate-400 mt-2">* 등록금 vs 실질부담금 (장학금 제외 비용)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1인당 교육비 현황 섹션 -->
+        <section class="mb-16">
+            <div class="flex items-center gap-2 mb-6">
+                <div class="w-1 h-6 bg-blue-600 rounded-full"></div>
+                <h2 class="text-2xl font-bold">1인당 교육비 현황 (대학 전체)</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- 국립대 데이터 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm">국립대학</span>
+                        지역 거점 균형 투자
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-end">
+                            <span class="text-slate-600">강원대 (강원)</span>
+                            <span class="font-bold text-lg">2,397만 원</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full" style="width: 20%"></div>
+                        </div>
+                        
+                        <div class="flex justify-between items-end">
+                            <span class="text-slate-600">충남대 (충청)</span>
+                            <span class="font-bold text-lg">2,401만 원</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full" style="width: 20%"></div>
+                        </div>
+
+                        <div class="flex justify-between items-end">
+                            <span class="text-slate-600">경북대 (대구)</span>
+                            <span class="font-bold text-lg">2,708만 원</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full" style="width: 23%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 사립대 데이터 -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-sm">사립대학</span>
+                        재정 및 위치별 큰 편차
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-end">
+                            <span class="text-slate-600">포항공대 (경북)</span>
+                            <span class="font-bold text-lg text-purple-600">12,738만 원</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-purple-500 h-full" style="width: 100%"></div>
+                        </div>
+                        
+                        <div class="flex justify-between items-end">
+                            <span class="text-slate-600">차의과학대 (경기)</span>
+                            <span class="font-bold text-lg">4,402만 원</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-purple-500 h-full" style="width: 35%"></div>
+                        </div>
+
+                        <div class="flex justify-between items-end">
+                            <span class="text-slate-600">가천대 (경기)</span>
+                            <span class="font-bold text-lg">1,811만 원</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="bg-purple-500 h-full" style="width: 15%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 컴퓨터공학과 상세 지표 -->
+        <section class="mb-16">
+            <div class="flex items-center gap-2 mb-6">
+                <div class="w-1 h-6 bg-blue-600 rounded-full"></div>
+                <h2 class="text-2xl font-bold">컴퓨터공학과 상세 지표 비교</h2>
+            </div>
+            
+            <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-200">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-bottom border-slate-200">
+                            <th class="p-6 font-bold text-slate-500 text-sm uppercase">구분</th>
+                            <th class="p-6 font-bold text-blue-600">국립 (예: 강원대)</th>
+                            <th class="p-6 font-bold text-purple-600">사립 (예: 가천대)</th>
+                            <th class="p-6 font-bold text-slate-500 text-sm uppercase hidden md:table-cell">비고</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <tr>
+                            <td class="p-6 font-semibold">평균 등록금</td>
+                            <td class="p-6">약 436만 원</td>
+                            <td class="p-6">약 969만 원</td>
+                            <td class="p-6 text-slate-500 text-sm hidden md:table-cell">사립이 약 2.2배 높음</td>
+                        </tr>
+                        <tr>
+                            <td class="p-6 font-semibold">평균 장학금</td>
+                            <td class="p-6">약 332만 원</td>
+                            <td class="p-6">약 324만 원</td>
+                            <td class="p-6 text-slate-500 text-sm hidden md:table-cell">수치상 비슷함</td>
+                        </tr>
+                        <tr class="bg-blue-50/30">
+                            <td class="p-6 font-bold">실질 부담금</td>
+                            <td class="p-6 font-bold text-blue-700 underline">약 104만 원</td>
+                            <td class="p-6 font-bold">약 645만 원</td>
+                            <td class="p-6 text-blue-600 font-medium text-sm hidden md:table-cell">국립대가 압도적 우위</td>
+                        </tr>
+                        <tr>
+                            <td class="p-6 font-semibold">신입생 경쟁률</td>
+                            <td class="p-6">11.1 : 1</td>
+                            <td class="p-6 font-bold text-purple-700">21.4 : 1</td>
+                            <td class="p-6 text-slate-500 text-sm hidden md:table-cell">수도권 사립 선호도 반영</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 핵심 시사점 -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="bg-slate-800 text-white p-8 rounded-3xl shadow-xl transform hover:-translate-y-1 transition-transform">
+                <div class="text-amber-400 text-2xl mb-4"><i class="fa-solid fa-map-location-dot"></i></div>
+                <h3 class="text-xl font-bold mb-4">수도권 집중과 교육비</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    수도권 대학은 선호도가 높지만, 1인당 교육비가 반드시 비례하지는 않습니다. 지역 연구중심 사립대가 더 높은 투자를 보이기도 합니다.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 transform hover:-translate-y-1 transition-transform">
+                <div class="text-blue-600 text-2xl mb-4"><i class="fa-solid fa-coins"></i></div>
+                <h3 class="text-xl font-bold mb-4">국립대의 교육 가성비</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    낮은 등록금에도 불구하고 교육비를 사립대 평균 이상으로 유지하며, 국가 지원을 통한 안정적인 IT 교육 환경을 제공합니다.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 transform hover:-translate-y-1 transition-transform">
+                <div class="text-emerald-600 text-2xl mb-4"><i class="fa-solid fa-user-graduate"></i></div>
+                <h3 class="text-xl font-bold mb-4">취업률과의 관계</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    국립(48.3%) 대비 사립(65.1%)의 취업률이 높습니다. 이는 투자 규모 외에 수도권 인프라와 기업 접근성이 주요 원인으로 분석됩니다.
+                </p>
+            </div>
+        </section>
+
+        <!-- 결론 -->
+        <footer class="bg-blue-600 text-white p-10 rounded-3xl text-center">
+            <h2 class="text-2xl font-bold mb-4">분석 결론</h2>
+            <p class="max-w-3xl mx-auto opacity-90 leading-relaxed">
+                교육비 투자(Input)는 **연구 중심 사립 > 거점 국립 > 일반 사립** 순으로 나타나지만, 
+                취업률(Output)은 지역적 위치와 설립 유형이 복합적으로 작용합니다. 
+                실질적 혜택을 중시한다면 **국립대**를, 네트워크와 취업 접근성을 중시한다면 **수도권 사립대**가 유리한 지표를 보입니다.
+            </p>
+            <div class="mt-8 pt-8 border-t border-blue-500 text-sm opacity-75">
+                © 2026 Computer Science Department Education Analysis Report
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Chart Config Scripts -->
+    <script>
+        // Chart 1: 1인당 교육비 비교 (막대 그래프)
+        const ctx1 = document.getElementById('costChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['가천대(사립)', '강원대(국립)', '충남대(국립)', '경북대(국립)', '차의과학대(사립)', '포항공대(사립)'],
+                datasets: [{
+                    label: '1인당 교육비 (단위: 만 원)',
+                    data: [1811, 2397, 2401, 2708, 4402, 12738],
+                    backgroundColor: [
+                        'rgba(147, 51, 234, 0.7)', // 사립 (보라)
+                        'rgba(37, 99, 235, 0.7)',  // 국립 (파랑)
+                        'rgba(37, 99, 235, 0.7)',
+                        'rgba(37, 99, 235, 0.7)',
+                        'rgba(147, 51, 234, 0.7)',
+                        'rgba(147, 51, 234, 0.9)'  // 포항공대 (강조)
+                    ],
+                    borderColor: [
+                        'rgba(147, 51, 234, 1)',
+                        'rgba(37, 99, 235, 1)',
+                        'rgba(37, 99, 235, 1)',
+                        'rgba(37, 99, 235, 1)',
+                        'rgba(147, 51, 234, 1)',
+                        'rgba(147, 51, 234, 1)'
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [2, 4], color: '#f1f5f9' }
+                    },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Chart 2: 컴퓨터공학과 비용 구조 (그룹 막대 그래프)
+        const ctx2 = document.getElementById('deptChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['평균 등록금', '실질 부담금(등록금-장학금)'],
+                datasets: [
+                    {
+                        label: '국립 (강원대)',
+                        data: [436, 104],
+                        backgroundColor: 'rgba(37, 99, 235, 0.8)',
+                        borderRadius: 6
+                    },
+                    {
+                        label: '사립 (가천대)',
+                        data: [969, 645],
+                        backgroundColor: 'rgba(147, 51, 234, 0.8)',
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [2, 4], color: '#f1f5f9' }
+                    },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
