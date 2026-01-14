@@ -52,8 +52,9 @@
         body.light .nav-text { color: #0f172a; }
         body.solar .nav-text { color: #7c2d12; }
 
-        /* 태양 테마용 특수 클래스 (JS에서 제어) */
+        /* 태양 테마용 강조 색상 */
         body.solar .solar-accent { color: #f97316; }
+        body.solar .rocket-icon { color: rgba(249, 115, 22, 0.3); }
 
         .stars-container {
             position: fixed;
@@ -190,7 +191,8 @@
             </div>
             <div class="hidden md:block relative">
                 <div class="floating">
-                    <i class="fas fa-rocket text-[200px] text-sky-400/20 rotate-[15deg]"></i>
+                    <!-- 우주선 아이콘: 테마에 따라 색상이 변경되도록 rocket-icon 클래스 추가 -->
+                    <i class="fas fa-rocket text-[200px] text-sky-400/20 rocket-icon rotate-[15deg] transition-colors duration-500"></i>
                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-sky-500/20 rounded-full blur-[80px]"></div>
                 </div>
             </div>
@@ -239,13 +241,6 @@
                 </div>
                 <i class="fas fa-code-branch absolute -bottom-10 -right-10 text-[180px] text-white/5 rotate-[-15deg]"></i>
             </a>
-
-            <!-- 사이버폭력 (조별과제) -->
-            <div class="project-card group p-8 rounded-[2rem]">
-                <div class="mb-10 text-3xl text-blue-400"><i class="fas fa-user-shield"></i></div>
-                <h3 class="text-2xl font-bold mb-4">사이버 폭력 실태 분석</h3>
-                <p class="text-sub text-sm mb-6 leading-relaxed">온라인 플랫폼 내 언어 폭력 패턴 조사를 통한 청소년 보안 담론 형성 [조별 과제]</p>
-            </div>
 
             <!-- 05. AI 윤리 유튜브 분석 -->
             <a href="05.html" class="project-card group p-8 rounded-[2rem]">
