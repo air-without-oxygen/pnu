@@ -3,203 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>대한민국 연령별 사망 원인 분석</title>
+    <title>대학 데이터 대화형 분석 리포트</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Pretendard', sans-serif; }
-        .donut-chart { transform: rotate(-90deg); }
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap');
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+        .gradient-text { background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        select { cursor: pointer; }
+        .btn-home { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-home:hover { transform: scale(1.05); background-color: #2563eb; color: white; border-color: #2563eb; }
+        .btn-home:active { transform: scale(0.95); }
+        .reset-flash { animation: flash 0.5s ease-out; }
+        @keyframes flash {
+            0% { background-color: rgba(37, 99, 235, 0.2); }
+            100% { background-color: transparent; }
+        }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50 text-gray-900">
+<body class="text-slate-800">
 
-    <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                <span class="font-bold text-gray-800 tracking-tight">대한민국 사망 원인 통계</span>
+    <!-- 상단 헤더 -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 py-4 px-6">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <!-- 홈으로 이동 버튼: 상대 경로 오류 방지를 위해 함수 호출 방식으로 변경 -->
+                <button onclick="goToIndex()" class="btn-home flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 shadow-sm font-bold text-sm" title="메인 페이지로 이동">
+                    <i class="fa-solid fa-house"></i>
+                    <span>홈으로</span>
+                </button>
+                <div class="h-6 w-[1px] bg-slate-200 mx-2"></div>
+                <h1 class="text-xl font-bold gradient-text"><i class="fa-solid fa-chart-pie mr-2"></i>대학 데이터 정밀 분석</h1>
             </div>
-            <a href="index.html" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-all text-sm font-medium shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                홈으로 이동
-            </a>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="bg-white border-b border-gray-200">
-        <div class="max-w-5xl mx-auto px-6 py-16 text-center">
-            <span class="inline-block px-3 py-1 mb-4 text-sm font-semibold text-red-600 bg-red-50 rounded-full">2024 사회 통계 리포트</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">
-                대한민국 연령대별 <br/>
-                <span class="text-blue-600">사망 원인 정밀 분석</span>
-            </h1>
-            <p class="max-w-2xl mx-auto text-lg text-gray-600 leading-relaxed">
-                연령대에 따라 우리가 직면하는 삶의 위험 요소는 확연히 다릅니다. 
-                통계 데이터를 통해 본 우리 사회의 현주소와 건강 관리의 방향성.
-            </p>
+            <div class="hidden md:flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-widest">
+                <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span> Analysis Mode
+            </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-5xl mx-auto px-6 py-12 pb-24">
-        <div id="card-container" class="grid md:grid-cols-2 gap-8">
-            <!-- Cards will be injected by JavaScript -->
+    <main id="main-content" class="max-w-6xl mx-auto px-6 py-8 transition-colors duration-500">
+        
+        <!-- 대시보드 요약 가이드 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white border border-slate-200 p-5 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-3 text-lg">
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <h4 class="font-bold text-slate-800">지역별 분석</h4>
+                <p class="text-xs text-slate-500 mt-1">부산, 경기, 서울 등 주요 지역 대학 비교</p>
+            </div>
+            <div class="bg-white border border-slate-200 p-5 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-3 text-lg">
+                    <i class="fa-solid fa-won-sign"></i>
+                </div>
+                <h4 class="font-bold text-slate-800">경제적 지표</h4>
+                <p class="text-xs text-slate-500 mt-1">등록금 대비 장학금 및 실부담액</p>
+            </div>
+            <div class="bg-white border border-slate-200 p-5 rounded-3xl shadow-sm hover:shadow-md transition-shadow">
+                <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-3 text-lg">
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <h4 class="font-bold text-slate-800">취업 성과</h4>
+                <p class="text-xs text-slate-500 mt-1">대학별 공시 취업률 및 경쟁률 비교</p>
+            </div>
         </div>
 
-        <!-- Child Mortality Note -->
-        <div class="mt-16 p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm">
-            <div class="flex flex-col md:flex-row gap-10 items-center">
-                <div class="flex-1">
-                    <div class="inline-flex items-center justify-center w-12 h-12 bg-pink-50 rounded-2xl mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-pink-500"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4 text-gray-800">15세 미만 어린이 및 영유아</h3>
-                    <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                        성인과 달리 질병이나 사고보다는 선천적 요인이 큽니다. 출생전후기의 특정 병태(40.8%)와 
-                        선천 기형 및 염색체 이상(23.2%)이 주된 원인으로 나타났습니다.
-                    </p>
-                    <div class="inline-block px-5 py-2.5 bg-pink-50 text-pink-600 rounded-xl text-sm font-bold">영아 급사 증후군 7.4%</div>
+        <!-- 대학 선택 섹션 -->
+        <section class="bg-white rounded-3xl p-8 mb-8 shadow-sm border border-slate-200">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="relative">
+                    <label class="block text-slate-400 text-[10px] font-bold uppercase mb-2 tracking-tighter">비교 대상 A</label>
+                    <select id="univA" onchange="updateAnalysis()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-100 outline-none transition-all text-sm font-bold shadow-sm appearance-none">
+                        <!-- JS에서 옵션 채움 -->
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-6 bottom-5 text-slate-300 pointer-events-none"></i>
                 </div>
-                <div class="w-full md:w-2/5 flex flex-col items-center gap-4" id="child-charts">
-                    <!-- Child Charts injected by JS -->
+                <div class="relative">
+                    <label class="block text-slate-400 text-[10px] font-bold uppercase mb-2 tracking-tighter">비교 대상 B</label>
+                    <select id="univB" onchange="updateAnalysis()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 focus:ring-4 focus:ring-purple-100 outline-none transition-all text-sm font-bold shadow-sm appearance-none">
+                        <!-- JS에서 옵션 채움 -->
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-6 bottom-5 text-slate-300 pointer-events-none"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- 차트 섹션 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-coins text-blue-500"></i> 학비 및 장학금 구조
+                </h3>
+                <div class="h-80">
+                    <canvas id="costChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-bullseye text-emerald-500"></i> 핵심 성과 레이더
+                </h3>
+                <div class="h-80">
+                    <canvas id="performanceChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="mt-24 text-center border-t border-gray-100 pt-12">
-            <p class="text-sm text-gray-400 font-medium mb-4 tracking-tight">본 리포트는 통계청 연령별 사망원인 통계 자료를 시각화한 것입니다.</p>
-            <div class="flex flex-wrap justify-center gap-3">
-                <span class="px-3 py-1 bg-gray-100 text-gray-400 rounded-lg text-xs font-semibold">#정신건강</span>
-                <span class="px-3 py-1 bg-gray-100 text-gray-400 rounded-lg text-xs font-semibold">#자살예방</span>
-                <span class="px-3 py-1 bg-gray-100 text-gray-400 rounded-lg text-xs font-semibold">#정기검진</span>
-                <span class="px-3 py-1 bg-gray-100 text-gray-400 rounded-lg text-xs font-semibold">#사회안전망</span>
+        <!-- 상세 비교 테이블 -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-12">
+            <div class="bg-slate-50 px-8 py-5 border-b border-slate-200">
+                <h3 class="font-bold text-slate-700 text-sm">상세 데이터 비교 매트릭스</h3>
             </div>
-        </footer>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-[10px] text-slate-400 uppercase font-extrabold border-b border-slate-100">
+                            <th class="px-8 py-5 w-1/4">지표명</th>
+                            <th id="table-head-a" class="px-8 py-5 text-blue-600">대학교 A</th>
+                            <th id="table-head-b" class="px-8 py-5 text-purple-600">대학교 B</th>
+                            <th class="px-8 py-5">분석 노트</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparison-table-body" class="text-sm divide-y divide-slate-50">
+                        <!-- 데이터 채워짐 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </main>
 
     <script>
-        const ageData = [
-            {
-                id: 'youth',
-                range: '10대 - 30대',
-                title: '청년기: 심리적 안전망의 필요성',
-                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>`,
-                mainCause: '고의적 자해 (자살)',
-                primaryPercent: 70.9,
-                stats: '20대 자살 비중 70.9% 달함',
-                description: '젊은 층에서는 정신건강과 밀접한 외부적 요인이 압도적입니다. 사회적 안전망과 심리적 지원이 절실한 시기입니다.',
-                color: 'bg-blue-50',
-                chartColor: 'text-blue-500'
-            },
-            {
-                id: 'middle',
-                range: '40대',
-                title: '중장년기: 건강 관리의 전환점',
-                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-500"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`,
-                mainCause: '자살(36.4%) vs 암(34.3%)',
-                primaryPercent: 36.4,
-                stats: '사망 원인의 패러다임 교차점',
-                description: '신체적 노화와 심리적 중압감이 교차하는 시기입니다. 간 질환과 심장 질환이 주요 원인으로 부상하기 시작합니다.',
-                color: 'bg-yellow-50',
-                chartColor: 'text-yellow-500'
-            },
-            {
-                id: 'late-middle',
-                range: '50대 - 60대',
-                title: '장년기: 질병 예방의 핵심기',
-                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-orange-500"><path d="M17.7 7.7A7.1 7.1 0 1 1 5 8h1a9 9 0 0 1 14.5 6.7L21 16h-3.4a4 4 0 0 0-3.1-4.8"/><path d="M12 12v10"/><path d="m16 16-4 4-4-4"/></svg>`,
-                mainCause: '악성신생물 (암)',
-                primaryPercent: 63.3,
-                stats: '60대 암 비중 63.3%까지 급증',
-                description: '암이 명실상부한 최대 원인이 됩니다. 정기적인 건강 검진과 체계적인 신체 관리가 생존의 핵심이 됩니다.',
-                color: 'bg-orange-50',
-                chartColor: 'text-orange-500'
-            },
-            {
-                id: 'elderly',
-                range: '70대 - 80대 이상',
-                title: '노년기: 만성 및 퇴행성 질환 관리',
-                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-500"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>`,
-                mainCause: '암, 폐렴, 심장질환',
-                primaryPercent: 31.7,
-                stats: '80세 이상 폐렴(22.9%) 급증',
-                description: '노환 관련 질환의 비중이 높아집니다. 폐렴과 알츠하이머병 등 퇴행성 및 감염성 질환에 대한 주의가 필요합니다.',
-                color: 'bg-purple-50',
-                chartColor: 'text-purple-500'
-            }
+        const rawData = [
+            { name: "부산대학교", type: "국립", region: "부산", competition: 12.5, tuition: 4450000, scholarship: 3200000, jobRate: 68.9, cat: "거점국립" },
+            { name: "국립부경대학교", type: "국립", region: "부산", competition: 10.8, tuition: 4200000, scholarship: 3050000, jobRate: 64.2, cat: "국립특성" },
+            { name: "가천대학교", type: "사립", region: "경기", competition: 21.4, tuition: 9696800, scholarship: 3248180, jobRate: 65.1, cat: "수도권대형" },
+            { name: "동서대학교", type: "사립", region: "부산", competition: 11.2, tuition: 8600000, scholarship: 3400000, jobRate: 69.8, cat: "특성화사립" },
+            { name: "한국공학대학교", type: "사립", region: "경기", competition: 14.8, tuition: 9100000, scholarship: 3500000, jobRate: 74.2, cat: "산업특성" },
+            { name: "경남정보대학교", type: "사립", region: "부산", competition: 15.4, tuition: 6800000, scholarship: 2500000, jobRate: 78.5, cat: "전문대학" },
+            { name: "서강대학교", type: "사립", region: "서울", competition: 28.5, tuition: 9500000, scholarship: 3900000, jobRate: 78.4, cat: "인서울" }
         ];
 
-        function createDonutChart(percent, colorClass, label) {
-            const radius = 36;
-            const circumference = 2 * Math.PI * radius;
-            const offset = circumference - (percent / 100) * circumference;
-            return `
-                <div class="relative flex flex-col items-center justify-center w-32 h-32">
-                    <svg class="donut-chart w-full h-full">
-                        <circle cx="64" cy="64" r="${radius}" stroke="#e5e7eb" stroke-width="8" fill="transparent" />
-                        <circle cx="64" cy="64" r="${radius}" stroke="currentColor" stroke-width="8" fill="transparent" 
-                            stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" stroke-linecap="round"
-                            class="${colorClass}" />
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-lg font-black text-gray-800">${percent}%</span>
-                        <span class="text-[10px] font-bold text-gray-500 uppercase">${label}</span>
-                    </div>
-                </div>
-            `;
+        let costChart, performanceChart;
+
+        // index.html로 이동하는 함수
+        function goToIndex() {
+            try {
+                // 현재 URL 구조에 맞춰 index.html로 이동
+                const currentPath = window.location.pathname;
+                const newPath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1) + 'index.html';
+                window.location.href = newPath;
+            } catch (e) {
+                // 폴백: 일반적인 상대 경로 이동
+                window.location.assign('index.html');
+            }
         }
 
-        const container = document.getElementById('card-container');
-        ageData.forEach(item => {
-            const card = document.createElement('div');
-            card.className = `${item.color} border border-white rounded-3xl p-8 transition-all hover:shadow-md duration-300`;
-            card.innerHTML = `
-                <div class="flex justify-between items-start mb-6">
-                    <div>
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">${item.range}</span>
-                        <h3 class="text-2xl font-bold mt-1 text-gray-800">${item.title}</h3>
-                    </div>
-                    <div class="p-3 bg-white rounded-2xl shadow-sm">
-                        ${item.icon}
-                    </div>
-                </div>
-                <div class="flex flex-col lg:flex-row gap-6 items-center lg:items-start mb-6">
-                    <div class="flex-shrink-0">
-                        ${createDonutChart(item.primaryPercent, item.chartColor, '1순위 비중')}
-                    </div>
-                    <div class="flex-1 space-y-4 w-full">
-                        <div class="bg-white/80 rounded-2xl p-4 border border-white/50 shadow-sm">
-                            <div class="flex items-center gap-2 mb-1 text-red-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                                <span class="text-[11px] font-bold text-gray-500 uppercase">사망 원인 1위</span>
-                            </div>
-                            <p class="text-lg font-black text-gray-900 leading-tight">${item.mainCause}</p>
-                        </div>
-                        <div class="bg-white/80 rounded-2xl p-4 border border-white/50 shadow-sm">
-                            <div class="flex items-center gap-2 mb-1 text-blue-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                                <span class="text-[11px] font-bold text-gray-500 uppercase">통계 요약</span>
-                            </div>
-                            <p class="text-md font-bold text-gray-800">${item.stats}</p>
-                        </div>
-                    </div>
-                </div>
-                <p class="text-gray-600 leading-relaxed text-sm">${item.description}</p>
-            `;
-            container.appendChild(card);
-        });
+        function init() {
+            const selectA = document.getElementById('univA');
+            const selectB = document.getElementById('univB');
+            
+            const regions = ["부산", "경기", "서울"];
+            regions.forEach(region => {
+                const groupA = document.createElement('optgroup');
+                groupA.label = region + " 지역";
+                const groupB = document.createElement('optgroup');
+                groupB.label = region + " 지역";
 
-        const childCharts = document.getElementById('child-charts');
-        childCharts.innerHTML = `
-            <div class="flex gap-4">
-                ${createDonutChart(40.8, 'text-pink-400', '출생전후기')}
-                ${createDonutChart(23.2, 'text-pink-300', '선천기형')}
-            </div>
-            <span class="text-xs font-medium text-gray-400">어린이 주요 사망 원인 비중</span>
-        `;
+                rawData.filter(d => d.region === region).forEach(univ => {
+                    const idx = rawData.indexOf(univ);
+                    groupA.appendChild(new Option(`${univ.name} (${univ.cat})`, idx));
+                    groupB.appendChild(new Option(`${univ.name} (${univ.cat})`, idx));
+                });
+                selectA.add(groupA);
+                selectB.add(groupB);
+            });
+
+            createCharts();
+            // 페이지 로드 시 초기값 설정
+            const idxA = rawData.findIndex(u => u.name === "부산대학교");
+            const idxB = rawData.findIndex(u => u.name === "가천대학교");
+            selectA.value = idxA;
+            selectB.value = idxB;
+            updateAnalysis();
+        }
+
+        function createCharts() {
+            const chartOptions = { 
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true, font: { size: 11 } } } }
+            };
+
+            const ctx1 = document.getElementById('costChart').getContext('2d');
+            costChart = new Chart(ctx1, {
+                type: 'bar',
+                data: { labels: ['등록금', '장학금', '실제부담'], datasets: [] },
+                options: chartOptions
+            });
+
+            const ctx2 = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(ctx2, {
+                type: 'radar',
+                data: { labels: ['취업률(%)', '경쟁률(x4)', '장학비율(%)'], datasets: [] },
+                options: { ...chartOptions, scales: { r: { beginAtZero: true, max: 100, ticks: { display: false } } } }
+            });
+        }
+
+        function updateAnalysis() {
+            const a = rawData[document.getElementById('univA').value];
+            const b = rawData[document.getElementById('univB').value];
+
+            document.getElementById('table-head-a').innerText = a.name;
+            document.getElementById('table-head-b').innerText = b.name;
+
+            costChart.data.datasets = [
+                { label: a.name, data: [a.tuition, a.scholarship, a.tuition - a.scholarship], backgroundColor: '#3b82f6', borderRadius: 8 },
+                { label: b.name, data: [b.tuition, b.scholarship, b.tuition - b.scholarship], backgroundColor: '#a855f7', borderRadius: 8 }
+            ];
+            costChart.update();
+
+            performanceChart.data.datasets = [
+                { label: a.name, data: [a.jobRate, a.competition * 4, (a.scholarship/a.tuition)*100], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', pointRadius: 4, borderWidth: 2 },
+                { label: b.name, data: [b.jobRate, b.competition * 4, (b.scholarship/b.tuition)*100], borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.1)', pointRadius: 4, borderWidth: 2 }
+            ];
+            performanceChart.update();
+
+            const rows = [
+                ["지역 및 학제", `${a.region} / ${a.cat}`, `${b.region} / ${b.cat}`, "입지 조건 비교"],
+                ["공시 취업률", a.jobRate + "%", b.jobRate + "%", a.jobRate > b.jobRate ? "A 우세" : "B 우세"],
+                ["신입생 경쟁률", a.competition + ":1", b.competition + ":1", "최근 선호도"],
+                ["연간 실부담금", (a.tuition-a.scholarship).toLocaleString() + "원", (b.tuition-b.scholarship).toLocaleString() + "원", "경제적 가치"]
+            ];
+
+            document.getElementById('comparison-table-body').innerHTML = rows.map(row => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-8 py-4 font-bold text-slate-400 text-[10px] uppercase tracking-tighter">${row[0]}</td>
+                    <td class="px-8 py-4 font-bold text-slate-900">${row[1]}</td>
+                    <td class="px-8 py-4 font-bold text-slate-900">${row[2]}</td>
+                    <td class="px-8 py-4 text-xs text-slate-500 font-medium italic">${row[3]}</td>
+                </tr>
+            `).join('');
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
