@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Data Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        space: {
+                            900: '#020617',
+                            800: '#0f172a',
+                            700: '#1e293b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@100;400;700&display=swap');
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        /* Space Background Stars & Planets */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        /* 은은한 행성 스타일 */
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0.08; /* 아주 눈에 띄지 않을 정도의 투명도 */
+            animation: float-around var(--duration) infinite linear;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes float-around {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, 50px) rotate(120deg); }
+            66% { transform: translate(-20px, 80px) rotate(240deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        .dark .star { background: white; }
+        .light .star { background: #38bdf8; opacity: 0.2; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .project-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(8px);
+        }
+
+        .project-card:hover {
+            transform: translateY(-12px) scale(1.02);
+        }
+
+        .floating {
+            animation: floating 3s infinite ease-in-out;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+<body class="dark bg-space-900 text-slate-100 selection:bg-sky-500/30">
+    <!-- Star & Planet Background -->
+    <div id="stars" class="stars-container"></div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 backdrop-blur-md border-b border-white/5 dark:border-white/10">
+        <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
+            <div class="text-2xl font-black tracking-tighter">
+                COSMIC<span class="text-sky-400">DATA</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <button id="theme-toggle" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition">
+                    <i id="theme-icon" class="fas fa-moon text-yellow-400"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative max-w-7xl mx-auto px-6 pt-24 pb-32">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-sm font-medium mb-6">
+                    <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+                    신비로운 데이터 우주 탐사기
+                </div>
+                <h1 class="text-5xl md:text-8xl font-bold mb-6 leading-[1.1]">
+                    Explore the<br>
+                    <span class="gradient-text">Data Nebula</span>
+                </h1>
+                <p class="text-slate-400 dark:text-slate-400 light:text-slate-600 text-lg mb-10 max-w-lg leading-relaxed">
+                    무한한 데이터의 바다에서 의미 있는 별자리를 그려냅니다.<br>
+                    우주만큼이나 방대한 정보 속에서 찾아낸 예리한 분석과 가치 있는 통찰들을 소개합니다.
+                </p>
+                <div class="flex gap-4">
+                    <a href="#projects" class="px-8 py-4 bg-sky-500 hover:bg-sky-400 text-white font-bold rounded-2xl transition shadow-lg shadow-sky-500/20">
+                        탐사 시작하기
+                    </a>
+                </div>
+            </div>
+            <div class="hidden md:block relative">
+                <div class="floating">
+                    <i class="fas fa-rocket text-[200px] text-sky-400/20 rotate-[15deg]"></i>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-sky-500/20 rounded-full blur-[80px]"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Projects Section -->
+    <section id="projects" class="max-w-7xl mx-auto px-6 py-20">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-20">
+            <div>
+                <h2 class="text-4xl font-bold">Discovery Archive</h2>
+            </div>
+            <div class="text-sky-400 font-mono text-sm tracking-widest mt-4">COORD: 37.5665, 126.9780</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- 01. 킥보드 -->
+            <a href="01.html" class="project-card group p-8 rounded-[2rem] bg-white/5 dark:bg-slate-800/50 border border-white/10 hover:border-sky-500/50">
+                <div class="mb-10 text-3xl text-sky-400"><i class="fas fa-bolt-lightning"></i></div>
+                <h3 class="text-2xl font-bold mb-4 group-hover:text-sky-400 transition">킥보드 교통사고 분석</h3>
+                <p class="text-slate-400 text-sm mb-6 leading-relaxed">전동 킥보드 보급에 따른 사고 유형 및 위험 지역 시각화 분석</p>
+                <div class="flex items-center gap-2 text-xs font-mono text-slate-500">
+                    <span>#TRAFFIC</span><span>#SAFETY</span>
+                </div>
+            </a>
+
+            <!-- 02. 온난화 -->
+            <a href="02.html" class="project-card group p-8 rounded-[2rem] bg-white/5 dark:bg-slate-800/50 border border-white/10 hover:border-sky-500/50">
+                <div class="mb-10 text-3xl text-orange-400"><i class="fas fa-globe-americas"></i></div>
+                <h3 class="text-2xl font-bold mb-4 group-hover:text-sky-400 transition">지구 온난화 분석</h3>
+                <p class="text-slate-400 text-sm mb-6 leading-relaxed">글로벌 기온 상승 데이터와 탄소 배출량의 인과관계 규명</p>
+                <div class="flex items-center gap-2 text-xs font-mono text-slate-500">
+                    <span>#CLIMATE</span><span>#EARTH</span>
+                </div>
+            </a>
+
+            <!-- 03. 연령대별 사망원인 분석 -->
+            <a href="03.html" class="project-card group p-8 rounded-[2rem] bg-white/5 dark:bg-slate-800/50 border border-white/10 hover:border-sky-500/50">
+                <div class="mb-10 text-3xl text-red-400"><i class="fas fa-heart-pulse"></i></div>
+                <h3 class="text-2xl font-bold mb-4 group-hover:text-sky-400 transition">연령대별 사망원인 분석</h3>
+                <p class="text-slate-400 text-sm mb-6 leading-relaxed">공공 데이터를 활용한 생애주기별 건강 위험 요인 분석</p>
+                <div class="flex items-center gap-2 text-xs font-mono text-slate-500">
+                    <span>#HEALTH</span><span>#DEMOGRAPHY</span>
+                </div>
+            </a>
+
+            <!-- 04. 컴퓨터공학별 차이 -->
+            <a href="04.html" class="project-card group p-8 rounded-[2rem] bg-white/5 dark:bg-slate-800/50 border border-white/10 hover:border-sky-500/50 lg:col-span-2 overflow-hidden relative">
+                <div class="relative z-10">
+                    <div class="mb-10 text-3xl text-purple-400"><i class="fas fa-code-branch"></i></div>
+                    <h3 class="text-3xl font-bold mb-4 group-hover:text-sky-400 transition">컴퓨터 공학과별 차이 분석</h3>
+                    <p class="text-slate-400 text-base mb-6 max-w-xl">대학별 커리큘럼과 핵심 스택의 차이를 분석하여 전공별 특성을 데이터로 정의합니다.</p>
+                    <div class="flex items-center gap-4 text-xs font-mono text-slate-500">
+                        <span class="px-3 py-1 bg-white/5 rounded-full">#CS_TRENDS</span>
+                        <span class="px-3 py-1 bg-white/5 rounded-full">#CURRICULUM</span>
+                    </div>
+                </div>
+                <i class="fas fa-microchip absolute -bottom-10 -right-10 text-[200px] text-white/5 rotate-[-15deg]"></i>
+            </a>
+
+            <!-- 05. 사이버 폭력 실태 분석 -->
+            <a href="05.html" class="project-card group p-8 rounded-[2rem] bg-white/5 dark:bg-slate-800/50 border border-white/10 hover:border-sky-500/50">
+                <div class="mb-10 text-3xl text-blue-400"><i class="fas fa-shield-halved"></i></div>
+                <h3 class="text-2xl font-bold mb-4 group-hover:text-sky-400 transition">사이버 폭력 실태 분석</h3>
+                <p class="text-slate-400 text-sm mb-6 leading-relaxed">온라인 플랫폼 내 언어 폭력 패턴 분석을 통한 예방 대책 제시</p>
+                <div class="flex items-center gap-2 text-xs font-mono text-slate-500">
+                    <span>#SOCIAL_ISSUE</span><span>#NLP</span>
+                </div>
+            </a>
+
+            <!-- 06. AI 윤리 유튜브 담론 분석 -->
+            <a href="05.html" class="project-card group p-8 rounded-[2rem] bg-white/5 dark:bg-slate-800/50 border border-white/10 hover:border-sky-500/50">
+                <div class="mb-10 text-3xl text-emerald-400"><i class="fab fa-youtube"></i></div>
+                <h3 class="text-2xl font-bold mb-4 group-hover:text-sky-400 transition">AI 윤리 유튜브 담론 분석</h3>
+                <p class="text-slate-400 text-sm mb-6 leading-relaxed">인공지능 윤리에 대한 유튜브 대중적 인식 변화 조사</p>
+                <div class="flex items-center gap-2 text-xs font-mono text-slate-500">
+                    <span>#AI_ETHICS</span><span>#TEXT_MINING</span>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-32 border-t border-white/10 py-20 px-6 bg-white/5 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto flex flex-col items-center text-center gap-8">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-bold gradient-text">신정고등학교 : 김예찬</h2>
+                <p class="text-slate-500 font-mono text-sm tracking-widest uppercase">
+                    Future Data Scientist & Computer Science Student
+                </p>
+            </div>
+            
+            <div class="flex gap-8">
+                <a href="#" class="text-slate-400 hover:text-sky-400 transition transform hover:scale-110"><i class="fab fa-github text-2xl"></i></a>
+                <a href="#" class="text-slate-400 hover:text-sky-400 transition transform hover:scale-110"><i class="fas fa-envelope text-2xl"></i></a>
+            </div>
+
+            <div class="text-slate-600 font-mono text-[10px] mt-4">
+                SYSTEM_STATUS: ONLINE // MISSION: DATA_EXPLORATION_2024
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Create Stars & Planets
+        const starContainer = document.getElementById('stars');
+        const starCount = 150;
+        const planetCount = 6;
+        const planetColors = ['#38bdf8', '#818cf8', '#fb7185', '#fbbf24', '#34d399'];
+
+        // 별 생성
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+            starContainer.appendChild(star);
+        }
+
+        // 행성 생성
+        for (let i = 0; i < planetCount; i++) {
+            const planet = document.createElement('div');
+            planet.className = 'planet';
+            const size = (Math.random() * 100 + 50) + 'px';
+            planet.style.width = size;
+            planet.style.height = size;
+            planet.style.backgroundColor = planetColors[i % planetColors.length];
+            planet.style.left = Math.random() * 90 + '%';
+            planet.style.top = Math.random() * 90 + '%';
+            planet.style.setProperty('--duration', (Math.random() * 40 + 60) + 's'); // 아주 천천히 이동
+            starContainer.appendChild(planet);
+        }
+
+        // 2. Theme Toggle Logic
+        const body = document.body;
+        const themeBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+
+        themeBtn.addEventListener('click', () => {
+            if (body.classList.contains('dark')) {
+                body.classList.remove('dark', 'bg-space-900', 'text-slate-100');
+                body.classList.add('light', 'bg-slate-50', 'text-slate-900');
+                themeIcon.className = 'fas fa-sun text-orange-500';
+            } else {
+                body.classList.remove('light', 'bg-slate-50', 'text-slate-900');
+                body.classList.add('dark', 'bg-space-900', 'text-slate-100');
+                themeIcon.className = 'fas fa-moon text-yellow-400';
+            }
+        });
+
+        // 3. Scroll Reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0) scale(1)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px) scale(0.95)';
+            card.style.transition = 'all 0.6s ease-out';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
