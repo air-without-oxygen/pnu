@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Data Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        space: {
+                            900: '#020617',
+                            800: '#0f172a',
+                            700: '#1e293b',
+                        },
+                        solar: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            500: '#f97316',
+                            900: '#7c2d12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@100;400;700&display=swap');
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            transition: background-color 0.5s, color 0.5s;
+            overflow-x: hidden;
+        }
+
+        /* 테마별 기본 설정 */
+        body.dark { background-color: #020617; color: #f1f5f9; }
+        body.light { background-color: #f8fafc; color: #0f172a; }
+        body.solar { background-color: #fff7ed; color: #7c2d12; }
+
+        /* 테마별 텍스트 색상 세부 조정 */
+        body.dark .text-sub { color: #94a3b8; }
+        body.light .text-sub { color: #475569; }
+        body.solar .text-sub { color: #9a3412; opacity: 0.8; }
+
+        body.dark .nav-text { color: #f1f5f9; }
+        body.light .nav-text { color: #0f172a; }
+        body.solar .nav-text { color: #7c2d12; }
+
+        /* 태양 테마용 특수 클래스 (JS에서 제어) */
+        body.solar .solar-accent { color: #f97316; }
+
+        .stars-container {
+            position: fixed;
+            top: -5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+            transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            transition: transform 0.3s ease-out;
+        }
+
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(4px);
+            opacity: 0.08;
+            animation: float-around var(--duration) infinite linear;
+        }
+
+        body.solar .planet { opacity: 0.12; filter: blur(10px); }
+        body.solar .star { background: #fb923c; opacity: 0.4; }
+        body.light .star { background: #38bdf8; opacity: 0.25; }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes float-around {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, 50px) rotate(120deg); }
+            66% { transform: translate(-20px, 80px) rotate(240deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        body.solar .gradient-text {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .project-card {
+            display: block;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(8px);
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light .project-card {
+            background-color: rgba(15, 23, 42, 0.03);
+            border-color: rgba(15, 23, 42, 0.08);
+        }
+
+        body.solar .project-card {
+            background-color: rgba(251, 146, 60, 0.05);
+            border-color: rgba(124, 45, 18, 0.1);
+        }
+
+        .project-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            border-color: currentColor;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .floating {
+            animation: floating 3s infinite ease-in-out;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .btn-primary {
+            transition: all 0.3s;
+        }
+        body.dark .btn-primary { background-color: #38bdf8; color: white; }
+        body.light .btn-primary { background-color: #0ea5e9; color: white; }
+        body.solar .btn-primary { background-color: #f97316; color: white; }
+    </style>
+</head>
+<body class="dark selection:bg-sky-500/30">
+    <div id="stars" class="stars-container"></div>
+
+    <nav class="sticky top-0 z-50 backdrop-blur-md border-b border-white/5 dark:border-white/10">
+        <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
+            <div class="text-2xl font-black tracking-tighter nav-text">
+                COSMIC<span class="text-sky-400 solar-accent transition-colors duration-300">DATA</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex bg-white/5 rounded-full p-1 border border-white/10">
+                    <button id="dark-btn" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:bg-white/10 text-yellow-400"><i class="fas fa-moon"></i></button>
+                    <button id="light-btn" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:bg-white/10 text-sky-400"><i class="fas fa-sun"></i></button>
+                    <button id="solar-btn" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:bg-white/10 text-orange-500"><i class="fas fa-sun-plant-wilt"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative max-w-7xl mx-auto px-6 pt-24 pb-32">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="z-10">
+                <h1 class="text-5xl md:text-8xl font-bold mb-6 leading-[1.1]">
+                    Explore the<br>
+                    <span class="gradient-text">Data Nebula</span>
+                </h1>
+                <p class="text-sub text-lg mb-10 max-w-lg leading-relaxed">
+                    흩어져 있는 빅데이터 조각들을 모아 하나의 성운을 만듭니다.<br>
+                    우주만큼이나 방대한 데이터 속에서 발견한 가치 있는 통찰들.
+                </p>
+                <div class="flex gap-4">
+                    <a href="#projects" class="btn-primary px-8 py-4 font-bold rounded-2xl transition shadow-lg hover:opacity-90">
+                        탐사 시작하기
+                    </a>
+                </div>
+            </div>
+            <div class="hidden md:block relative">
+                <div class="floating">
+                    <i class="fas fa-rocket text-[200px] text-sky-400/20 rotate-[15deg]"></i>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-sky-500/20 rounded-full blur-[80px]"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="projects" class="max-w-7xl mx-auto px-6 py-20">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-20">
+            <div><h2 class="text-4xl font-bold">Discovery Archive</h2></div>
+            <div class="text-sky-400 body-solar:text-orange-500 font-mono text-sm tracking-widest mt-4">COORD: 37.5665, 126.9780</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
+            
+            <!-- 01. 킥보드 교통사고 분석 -->
+            <a href="01.html" class="project-card group p-8 rounded-[2rem]">
+                <div class="mb-10 text-3xl text-sky-400"><i class="fas fa-bolt-lightning"></i></div>
+                <h3 class="text-2xl font-bold mb-4 group-hover:text-sky-400 transition">킥보드 교통사고 분석</h3>
+                <p class="text-sub text-sm mb-6 leading-relaxed">전동 킥보드 보급에 따른 사고 유형 및 위험 지역 시각화 분석</p>
+                <span class="text-xs font-mono opacity-50 group-hover:opacity-100 transition">VIEW PROJECT →</span>
+            </a>
+
+            <!-- 02. 온난화 분석 -->
+            <a href="02.html" class="project-card group p-8 rounded-[2rem]">
+                <div class="mb-10 text-3xl text-orange-400"><i class="fas fa-globe-americas"></i></div>
+                <h3 class="text-2xl font-bold mb-4 group-hover:text-orange-400 transition">지구 온난화 분석</h3>
+                <p class="text-sub text-sm mb-6 leading-relaxed">글로벌 기온 상승 데이터와 탄소 배출량의 인과관계 규명</p>
+                <span class="text-xs font-mono opacity-50 group-hover:opacity-100 transition">VIEW PROJECT →</span>
+            </a>
+
+            <!-- 03. 연령대별 사망원인 분석 -->
+            <a href="03.html" class="project-card group p-8 rounded-[2rem]">
+                <div class="mb-10 text-3xl text-red-400"><i class="fas fa-heart-pulse"></i></div>
+                <h3 class="text-2xl font-bold mb-4 group-hover:text-red-400 transition">연령대별 사망원인 분석</h3>
+                <p class="text-sub text-sm mb-6 leading-relaxed">공공 데이터를 활용한 생애주기별 건강 위험 요인 분석</p>
+                <span class="text-xs font-mono opacity-50 group-hover:opacity-100 transition">VIEW PROJECT →</span>
+            </a>
+
+            <!-- 04. 컴퓨터 공학과별 차이 분석 -->
+            <a href="04.html" class="project-card group p-8 rounded-[2rem] lg:col-span-2 relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="mb-10 text-3xl text-purple-400"><i class="fas fa-microchip"></i></div>
+                    <h3 class="text-3xl font-bold mb-4 group-hover:text-purple-400 transition">컴퓨터 공학과별 차이 분석</h3>
+                    <p class="text-sub text-base mb-6 max-w-xl">대학별 커리큘럼과 핵심 기술 스택의 차이를 분석하여 각 전공별 학문적 지향점과 진로 특성을 데이터로 정의합니다.</p>
+                    <span class="text-xs font-mono opacity-50 group-hover:opacity-100 transition">DETAILED ANALYSIS →</span>
+                </div>
+                <i class="fas fa-code-branch absolute -bottom-10 -right-10 text-[180px] text-white/5 rotate-[-15deg]"></i>
+            </a>
+
+            <!-- 사이버폭력 (조별과제) -->
+            <div class="project-card group p-8 rounded-[2rem]">
+                <div class="mb-10 text-3xl text-blue-400"><i class="fas fa-user-shield"></i></div>
+                <h3 class="text-2xl font-bold mb-4">사이버 폭력 실태 분석</h3>
+                <p class="text-sub text-sm mb-6 leading-relaxed">온라인 플랫폼 내 언어 폭력 패턴 조사를 통한 청소년 보안 담론 형성 [조별 과제]</p>
+            </div>
+
+            <!-- 05. AI 윤리 유튜브 분석 -->
+            <a href="05.html" class="project-card group p-8 rounded-[2rem]">
+                <div class="mb-10 text-3xl text-emerald-400"><i class="fab fa-youtube"></i></div>
+                <h3 class="text-2xl font-bold mb-4 group-hover:text-emerald-400 transition">AI 윤리 유튜브 분석</h3>
+                <p class="text-sub text-sm mb-6 leading-relaxed">유튜브 영상 및 댓글 데이터를 활용한 인공지능 윤리에 대한 대중 인식 분석 [조별 과제]</p>
+                <span class="text-xs font-mono opacity-50 group-hover:opacity-100 transition">VIEW PROJECT →</span>
+            </a>
+
+        </div>
+    </section>
+
+    <footer class="mt-32 border-t border-white/10 py-20 px-6 bg-white/5 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto flex flex-col items-center text-center gap-8">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-bold gradient-text">신정고등학교 : 김예찬</h2>
+                <p class="text-sub font-mono text-sm tracking-widest uppercase">Future Data Scientist</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const starContainer = document.getElementById('stars');
+        const starCount = 150;
+        const planetCount = 8;
+        const planetColors = ['#38bdf8', '#818cf8', '#fb7185', '#fbbf24', '#34d399', '#f97316'];
+        const stars = [];
+
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            star.style.left = x + '%';
+            star.style.top = y + '%';
+            star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+            starContainer.appendChild(star);
+            stars.push({ el: star, ox: x, oy: y });
+        }
+
+        for (let i = 0; i < planetCount; i++) {
+            const planet = document.createElement('div');
+            planet.className = 'planet';
+            const size = (Math.random() * 80 + 40) + 'px';
+            planet.style.width = size;
+            planet.style.height = size;
+            planet.style.backgroundColor = planetColors[i % planetColors.length];
+            planet.style.left = Math.random() * 90 + '%';
+            planet.style.top = Math.random() * 90 + '%';
+            planet.style.setProperty('--duration', (Math.random() * 40 + 60) + 's');
+            starContainer.appendChild(planet);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            const moveX = (mouseX - window.innerWidth / 2) * -0.03;
+            const moveY = (mouseY - window.innerHeight / 2) * -0.03;
+            starContainer.style.transform = `translate(${moveX}px, ${moveY}px)`;
+
+            stars.forEach(s => {
+                const rect = s.el.getBoundingClientRect();
+                const dx = mouseX - (rect.left + rect.width / 2);
+                const dy = mouseY - (rect.top + rect.height / 2);
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 200) {
+                    const force = (200 - dist) / 20;
+                    s.el.style.transform = `translate(${-dx/force}px, ${-dy/force}px)`;
+                } else {
+                    s.el.style.transform = `translate(0, 0)`;
+                }
+            });
+        });
+
+        const body = document.body;
+        document.getElementById('dark-btn').addEventListener('click', () => body.className = 'dark');
+        document.getElementById('light-btn').addEventListener('click', () => body.className = 'light');
+        document.getElementById('solar-btn').addEventListener('click', () => body.className = 'solar');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0) scale(1)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px) scale(0.95)';
+            card.style.transition = 'all 0.6s ease-out';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
