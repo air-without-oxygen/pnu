@@ -3,259 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>중동 전쟁: 에너지, 무역 및 금융 영향 분석</title>
+    <title>toss econ - 경제 대시보드</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap');
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
-        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
-        .card { transition: transform 0.3s ease; }
-        .card:hover { transform: translateY(-5px); }
-        .chart-container { position: relative; height: 300px; width: 100%; }
-        .highlight-box { border-left: 4px solid #ef4444; background-color: #fef2f2; }
-        .home-btn {
-            transition: all 0.2s;
-            backdrop-filter: blur(4px);
-            background: rgba(255, 255, 255, 0.1);
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #f2f4f6;
+            color: #333d4b;
+            -webkit-font-smoothing: antialiased;
         }
-        .home-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
+        .toss-card {
+            background: white;
+            border-radius: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .toss-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .nav-blur {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        canvas {
+            max-height: 160px;
         }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="pb-24 md:pb-8">
 
-    <!-- Navigation / Home Button (Updated to 07.html) -->
-    <nav class="fixed top-6 left-6 z-50">
-        <a href="07.html" class="home-btn flex items-center gap-2 px-4 py-2 rounded-full text-white border border-white/20 shadow-lg">
-            <i class="fas fa-home"></i>
-            <span class="text-sm font-medium">홈으로</span>
-        </a>
+    <!-- GNB -->
+    <nav class="sticky top-0 z-50 nav-blur border-b border-gray-100">
+        <div class="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <a href="index.html" class="flex items-center gap-2 cursor-pointer">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-200">
+                        <i class="fa-solid fa-bolt text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-[#191f28]">toss econ</span>
+                </a>
+                <div class="hidden md:flex gap-6 text-[15px] font-semibold text-[#4e5968]">
+                    <a href="index.html" class="flex items-center gap-1.5 hover:bg-gray-100 px-3 py-1.5 rounded-xl transition-all">
+                        <i class="fa-solid fa-house text-sm"></i> 홈
+                    </a>
+                    <span class="text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl cursor-default">경제지표</span>
+                    <span class="hover:bg-gray-100 px-3 py-1.5 rounded-xl transition-all cursor-pointer">리포트</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button class="p-2 hover:bg-gray-100 rounded-full transition-colors relative">
+                    <i class="fa-regular fa-bell text-xl text-[#4e5968]"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                </button>
+                <div class="w-8 h-8 bg-gradient-to-tr from-blue-400 to-purple-400 rounded-full border border-white shadow-sm cursor-pointer"></div>
+            </div>
+        </div>
     </nav>
 
-    <!-- Header -->
-    <header class="gradient-bg text-white py-20 px-4 relative">
-        <div class="max-w-6xl mx-auto text-center">
-            <span class="bg-blue-500 text-xs font-bold px-3 py-1 rounded-full uppercase mb-4 inline-block shadow-lg shadow-blue-500/20">IMF Blog Analysis</span>
-            <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">중동 전쟁이 글로벌 경제에 미치는 영향</h1>
-            <p class="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed font-light">
-                에너지 시장의 불확실성, 무역 경로의 변화, 그리고 글로벌 금융 시스템의 리스크를 심층 분석합니다.
-            </p>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 -mt-10 mb-20">
+    <main class="max-w-5xl mx-auto px-5 py-8 space-y-6">
         
-        <!-- Summary Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div class="bg-white p-8 rounded-2xl shadow-xl border-t-4 border-orange-500 card text-center">
-                <i class="fas fa-gas-pump text-3xl text-orange-500 mb-4"></i>
-                <h3 class="text-lg font-bold text-slate-500">에너지 (Energy)</h3>
-                <p class="text-2xl font-bold mt-2">가격 변동성 증대</p>
-                <p class="text-sm text-slate-400 mt-1">공급망 불안정 및 유가 리스크</p>
+        <!-- 홈 가이드 배너 -->
+        <div class="bg-white p-4 rounded-2xl flex items-center justify-between shadow-sm border border-blue-50">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-100 p-2 rounded-xl text-blue-600">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <span class="font-bold text-[#191f28] text-sm md:text-base">메인 페이지로 돌아가고 싶으신가요?</span>
             </div>
-            <div class="bg-white p-8 rounded-2xl shadow-xl border-t-4 border-blue-500 card text-center">
-                <i class="fas fa-ship text-3xl text-blue-500 mb-4"></i>
-                <h3 class="text-lg font-bold text-slate-500">무역 (Trade)</h3>
-                <p class="text-2xl font-bold mt-2">공급망 지체</p>
-                <p class="text-sm text-slate-400 mt-1">해상 운송 경로 우회 및 비용 상승</p>
-            </div>
-            <div class="bg-white p-8 rounded-2xl shadow-xl border-t-4 border-emerald-500 card text-center">
-                <i class="fas fa-hand-holding-usd text-3xl text-emerald-500 mb-4"></i>
-                <h3 class="text-lg font-bold text-slate-500">취약국 지원 (Aid)</h3>
-                <p class="text-2xl font-bold mt-2">비대칭적 충격</p>
-                <p class="text-sm text-slate-400 mt-1">저소득국 재정 위기 및 IMF 지원</p>
-            </div>
+            <a href="index.html" class="bg-[#f2f4f6] hover:bg-gray-200 text-[#4e5968] px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-1 transition-all">
+                홈으로 이동 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
         </div>
 
-        <!-- Section 1: Energy & Trade -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-            <section class="bg-white rounded-3xl shadow-sm p-8 border border-slate-100">
-                <h2 class="text-2xl font-bold mb-6 flex items-center">
-                    <span class="w-2 h-6 bg-orange-500 mr-3 rounded-full"></span>
-                    에너지 공급망의 위기
-                </h2>
-                <p class="text-slate-600 mb-6 text-sm leading-relaxed">
-                    중동은 전 세계 석유 생산량의 35%를 담당합니다. 호르무즈 해협 등 주요 교역 경로 차단은 글로벌 유가 프리미엄을 유발하고 경제 성장을 둔화시킵니다.
-                </p>
-                <div class="chart-container" style="height: 250px;">
-                    <canvas id="energyChart"></canvas>
-                </div>
-            </section>
+        <!-- 헤더 -->
+        <section class="py-4">
+            <h1 class="text-3xl font-bold text-[#191f28] leading-tight mb-2">
+                박지민 님을 위한<br />
+                실시간 글로벌 경제 브리핑
+            </h1>
+            <span class="bg-white px-3 py-1 rounded-full text-xs font-bold text-gray-400 shadow-sm border border-gray-50 italic">
+                Updated: 2026.04.06
+            </span>
+        </section>
 
-            <section class="bg-white rounded-3xl shadow-sm p-8 border border-slate-100">
-                <h2 class="text-2xl font-bold mb-6 flex items-center">
-                    <span class="w-2 h-6 bg-blue-500 mr-3 rounded-full"></span>
-                    물류 지연 및 물가 상승
-                </h2>
-                <p class="text-slate-600 mb-6 text-sm leading-relaxed">
-                    희망봉 우회 항로는 운송 시간을 10일 이상 증가시켜 물류비용을 급등시킵니다. 이는 전 세계적인 물가 상승의 핵심 동인이 됩니다.
-                </p>
-                <div class="chart-container" style="height: 250px;">
+        <!-- 차트 그리드 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- MFS 카드 -->
+            <div class="toss-card p-7 shadow-sm border border-transparent hover:border-blue-100">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-[#8b95a1] text-sm font-bold mb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-chart-line"></i> 통화 금융 지수 (MFS)
+                        </h3>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-3xl font-extrabold text-[#191f28]">4,890.52</span>
+                            <span class="text-blue-500 text-[15px] font-bold flex items-center">
+                                <i class="fa-solid fa-caret-up mr-1"></i> 6.8%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-blue-50 rounded-2xl text-blue-600">
+                        <i class="fa-solid fa-wallet text-xl"></i>
+                    </div>
+                </div>
+                <div class="w-full pt-4">
+                    <canvas id="mfsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- ITG 카드 -->
+            <div class="toss-card p-7 shadow-sm border border-transparent hover:border-green-100">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-[#8b95a1] text-sm font-bold mb-1 flex items-center gap-1.5">
+                            <i class="fa-solid fa-globe"></i> 국제 무역 지수 (ITG)
+                        </h3>
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-3xl font-extrabold text-[#191f28]">+$400M</span>
+                            <span class="text-red-500 text-[15px] font-bold flex items-center">
+                                <i class="fa-solid fa-caret-down mr-1"></i> 1.2%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-2xl text-green-600">
+                        <i class="fa-solid fa-arrow-right-arrow-left text-xl"></i>
+                    </div>
+                </div>
+                <div class="w-full pt-4">
                     <canvas id="tradeChart"></canvas>
                 </div>
-            </section>
+            </div>
         </div>
 
-        <!-- Section 2: Asymmetric Impact -->
-        <section class="bg-white rounded-3xl shadow-sm p-8 md:p-12 mb-12 border border-slate-100">
-            <div class="max-w-3xl mx-auto text-center mb-12">
-                <h2 class="text-3xl font-bold mb-4">국가별 비대칭적 충격</h2>
-                <p class="text-slate-600">분쟁의 경제적 여파는 국가의 자원 보유 현황과 수입 의존도에 따라 상반되게 나타납니다.</p>
+        <!-- 스페셜 리포트 배너 -->
+        <div class="relative bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-[32px] overflow-hidden shadow-xl shadow-blue-200 group">
+            <div class="relative z-10 max-w-lg text-white">
+                <div class="bg-white/20 backdrop-blur-sm w-fit px-3 py-1 rounded-lg text-[10px] font-bold mb-4 uppercase tracking-wider">Special Report</div>
+                <h2 class="text-2xl font-bold mb-3 leading-snug">중동 전쟁이 에너지 가격과<br/>글로벌 경제에 주는 경고</h2>
+                <p class="text-blue-100 mb-6 text-sm leading-relaxed opacity-90">전쟁의 여파로 무역 경로와 금리에 큰 변화가 생겼습니다. IMF 보고서 기반의 심층 분석 내용을 확인해 보세요.</p>
+                <button class="bg-white text-blue-600 font-bold px-6 py-3 rounded-2xl hover:bg-blue-50 transition-all shadow-lg active:scale-95">
+                    리포트 전문 보기
+                </button>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-                <div class="space-y-8">
-                    <div class="highlight-box p-6 rounded-r-xl">
-                        <h3 class="text-xl font-bold text-red-700 mb-2">저소득 취약국 (Impacted)</h3>
-                        <p class="text-slate-700 leading-relaxed">
-                            에너지와 식량 수입에 크게 의존하는 저소득 국가들은 **심각한 물가 급등과 재정적 위기**에 직면해 있습니다. 이들은 가장 큰 경제적 타격을 입으며 사회적 불안정이 심화될 위험이 큽니다.
-                        </p>
-                    </div>
-                    <div class="bg-blue-50 p-6 rounded-xl border border-blue-100">
-                        <h3 class="text-xl font-bold text-blue-800 mb-2">자원 수출국 (Temporary Gain)</h3>
-                        <p class="text-slate-700 leading-relaxed">
-                            일부 자원 수출국은 가격 상승으로 일시적인 이익을 얻을 수 있으나, 글로벌 시장의 불확실성과 물류 지연은 장기적으로 성장을 저해하는 요소가 됩니다.
-                        </p>
-                    </div>
-                </div>
-                <div class="bg-slate-50 p-8 rounded-3xl">
-                    <h4 class="text-center font-bold mb-6 text-slate-700">국가 유형별 경제 성장 전망 변화 (예상치)</h4>
-                    <div class="chart-container" style="height: 300px;">
-                        <canvas id="impactComparisonChart"></canvas>
-                    </div>
-                </div>
+            <!-- 배경 장식 이미지/아이콘 -->
+            <div class="absolute -right-16 -bottom-16 opacity-10 group-hover:scale-110 transition-transform duration-700">
+                <i class="fa-solid fa-earth-asia text-[280px] text-white"></i>
             </div>
-        </section>
-
-        <!-- Section 3: IMF Policy Advice -->
-        <section class="bg-emerald-900 text-white rounded-3xl shadow-xl p-8 md:p-12 mb-12 relative overflow-hidden">
-            <div class="relative z-10 flex flex-col md:flex-row gap-10 items-center">
-                <div class="flex-1">
-                    <h2 class="text-3xl font-bold mb-6">IMF의 대응 전략 및 권고</h2>
-                    <p class="text-emerald-100 leading-relaxed mb-6 font-light">
-                        국제통화기금(IMF)은 이러한 비대칭적 충격에 대응하기 위해 국제사회의 공조와 취약국에 대한 집중적인 지원을 강조합니다.
-                    </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-emerald-800/50 p-4 rounded-lg border border-emerald-700 shadow-inner">
-                            <i class="fas fa-shield-alt text-emerald-400 mb-2"></i>
-                            <h4 class="font-bold">정책적 조언</h4>
-                            <p class="text-xs text-emerald-200">취약 계층을 위한 타겟팅된 재정 지원 강화</p>
-                        </div>
-                        <div class="bg-emerald-800/50 p-4 rounded-lg border border-emerald-700 shadow-inner">
-                            <i class="fas fa-coins text-emerald-400 mb-2"></i>
-                            <h4 class="font-bold">재정 지원</h4>
-                            <p class="text-xs text-emerald-200">유동성 위기 국가를 위한 긴급 자금 대출 및 채무 재조정</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex-1 text-center border-l border-emerald-700 pl-10 hidden md:block">
-                    <i class="fas fa-balance-scale text-7xl text-emerald-400 mb-6 opacity-40"></i>
-                    <p class="text-xl font-light italic">"글로벌 회복을 위해서는 취약한 연결고리를 강화하는 것이 필수적입니다."</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Call to Action / Source -->
-        <div class="text-center text-slate-500 text-sm mb-10">
-            <p>본 페이지는 IMF 블로그(2026년 3월 30일자) 기사 내용을 기반으로 제작되었습니다.</p>
-            <a href="https://www.imf.org/en/blogs/articles/2026/03/30/how-the-war-in-the-middle-east-is-affecting-energy-trade-and-finance" class="text-blue-500 hover:underline mt-2 inline-block transition-all" target="_blank">원문 기사 보기 <i class="fas fa-external-link-alt ml-1"></i></a>
         </div>
+
+        <!-- 조 매칭 팀 섹션 -->
+        <div class="toss-card p-7 shadow-sm">
+            <h2 class="text-xl font-bold text-[#191f28] flex items-center gap-2 mb-6">
+                <i class="fa-solid fa-shield-halved text-blue-600 text-lg"></i> 데이터 분석 팀 매칭
+            </h2>
+            <div class="bg-[#f9fafb] p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 border border-gray-100">
+                <div class="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
+                    <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-users-viewfinder text-blue-500 text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-lg text-[#191f28]">Python 최적화 팀 편성 완료</p>
+                        <p class="text-[#6b7684] text-sm italic">"00_조매칭.ipynb" 알고리즘 기반 5개 팀 생성</p>
+                    </div>
+                </div>
+                <button class="w-full md:w-auto bg-[#191f28] text-white font-bold px-6 py-3 rounded-2xl hover:bg-gray-800 transition-all active:scale-95 shadow-md">
+                    매칭 결과 상세히 보기
+                </button>
+            </div>
+        </div>
+
+        <!-- 푸터 -->
+        <footer class="text-center py-12 space-y-6">
+            <div class="flex justify-center gap-8 text-[13px] font-bold text-[#6b7684]">
+                <span class="hover:text-[#191f28] cursor-pointer">서비스 소개</span>
+                <span class="hover:text-[#191f28] cursor-pointer">문의하기</span>
+                <span class="hover:text-[#191f28] cursor-pointer">개인정보처리방침</span>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs text-[#adb5bd] font-medium">© 2024 PNU Big Data Lab. Toss UI Inspired.</p>
+                <p class="text-[10px] text-[#ccd2d9] max-w-xs mx-auto">이 페이지의 데이터는 IMF 공개 지표 및 업로드된 분석 자료를 바탕으로 시뮬레이션 되었습니다.</p>
+            </div>
+        </footer>
+
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-slate-100 py-12 border-t border-slate-200">
-        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-slate-600 text-sm">
-            <p>&copy; 2026 Global Economy Insight. All rights reserved.</p>
-            <div class="flex gap-6 mt-6 md:mt-0">
-                <a href="#" class="hover:text-blue-600 transition-colors">데이터 출처</a>
-                <a href="#" class="hover:text-blue-600 transition-colors">개인정보처리방침</a>
-                <a href="#" class="hover:text-blue-600 transition-colors">문의하기</a>
-            </div>
+    <!-- 모바일 하단바 -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-2xl border-t border-gray-100 flex justify-around pt-3 pb-8 px-2 z-50">
+        <a href="index.html" class="flex flex-col items-center gap-1 text-blue-600">
+            <i class="fa-solid fa-house text-xl"></i>
+            <span class="text-[10px] font-bold">홈</span>
+        </a>
+        <div class="flex flex-col items-center gap-1 text-[#adb5bd]">
+            <i class="fa-solid fa-chart-simple text-xl"></i>
+            <span class="text-[10px] font-bold">지표</span>
         </div>
-    </footer>
+        <div class="flex flex-col items-center gap-1 text-[#adb5bd]">
+            <i class="fa-solid fa-file-contract text-xl"></i>
+            <span class="text-[10px] font-bold">리포트</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 text-[#adb5bd]">
+            <i class="fa-solid fa-bars text-xl"></i>
+            <span class="text-[10px] font-bold">전체</span>
+        </div>
+    </div>
 
     <script>
-        // 1. Energy Market Chart
-        const energyCtx = document.getElementById('energyChart').getContext('2d');
-        new Chart(energyCtx, {
-            type: 'doughnut',
+        // MFS 차트 (Area Chart)
+        const mfsCtx = document.getElementById('mfsChart').getContext('2d');
+        const mfsGradient = mfsCtx.createLinearGradient(0, 0, 0, 160);
+        mfsGradient.addColorStop(0, 'rgba(49, 130, 246, 0.2)');
+        mfsGradient.addColorStop(1, 'rgba(49, 130, 246, 0)');
+
+        new Chart(mfsCtx, {
+            type: 'line',
             data: {
-                labels: ['중동 지역', '러시아', '미국', '기타'],
+                labels: ['23-Q1', '23-Q2', '23-Q3', '23-Q4', '24-Q1'],
                 datasets: [{
-                    data: [35, 12, 18, 35],
-                    backgroundColor: ['#f97316', '#64748b', '#3b82f6', '#e2e8f0'],
-                    hoverOffset: 15,
-                    borderWidth: 0
+                    label: '지수',
+                    data: [4200, 4350, 4100, 4580, 4890],
+                    borderColor: '#3182f6',
+                    borderWidth: 4,
+                    fill: true,
+                    backgroundColor: mfsGradient,
+                    tension: 0.4,
+                    pointRadius: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { 
-                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false }
                 }
             }
         });
 
-        // 2. Trade Route Comparison Chart
+        // ITG 차트 (Bar Chart)
         const tradeCtx = document.getElementById('tradeChart').getContext('2d');
         new Chart(tradeCtx, {
             type: 'bar',
             data: {
-                labels: ['수에즈 운하 (정상)', '희망봉 우회 (현재)'],
-                datasets: [{
-                    label: '운송 일수',
-                    data: [25, 37],
-                    backgroundColor: ['#60a5fa', '#f87171'],
-                    borderRadius: 8,
-                    barThickness: 40
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: true, grid: { borderDash: [5,5] }, title: { display: true, text: '평균 일수' } },
-                    x: { grid: { display: false } }
-                }
-            }
-        });
-
-        // 3. Impact Comparison Chart
-        const impactCtx = document.getElementById('impactComparisonChart').getContext('2d');
-        new Chart(impactCtx, {
-            type: 'bar',
-            data: {
-                labels: ['자원 수출국', '중간 소득국', '저소득 취약국'],
-                datasets: [{
-                    label: '전망치 변동 (bp)',
-                    data: [15, -45, -120],
-                    backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
-                    borderRadius: 8
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return ` 성장률 변동: ${context.raw} bp`;
-                            }
-                        }
+                labels: ['1월', '2월', '3월', '4월'],
+                datasets: [
+                    {
+                        label: '수출',
+                        data: [5200, 5400, 4900, 5600],
+                        backgroundColor: '#3182f6',
+                        borderRadius: 6
+                    },
+                    {
+                        label: '수입',
+                        data: [4800, 5100, 5300, 5200],
+                        backgroundColor: '#e5e8eb',
+                        borderRadius: 6
                     }
-                },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { borderDash: [5, 5] }, title: { display: true, text: 'Basis Points (100bp = 1%)' } },
-                    y: { grid: { display: false } }
+                    x: { grid: { display: false }, border: { display: false } },
+                    y: { display: false }
                 }
             }
         });
