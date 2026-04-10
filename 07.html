@@ -3,349 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K-Mortality Data Dashboard</title>
-    <!-- Tailwind CSS for modern UI -->
+    <title>사망 원인 통계 및 해결방안 대시보드</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for interactive visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap');
-        body { font-family: 'Pretendard', sans-serif; }
-        .chart-container { position: relative; height: 350px; width: 100%; }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
+        .chart-container { position: relative; height: 400px; width: 100%; }
+        .card { transition: all 0.3s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
+<body class="bg-gray-50">
 
-    <div class="flex flex-col lg:flex-row min-h-screen">
-        <!-- Sidebar -->
-        <aside class="w-full lg:w-72 bg-white border-r border-slate-200 p-6 flex-shrink-0">
-            <div class="flex items-center space-x-3 mb-10">
-                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-                    <i data-lucide="bar-chart-3"></i>
-                </div>
-                <h1 class="text-xl font-bold tracking-tight">사망 통계 분석</h1>
-            </div>
-
-            <nav class="space-y-2">
-                <button onclick="showTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-indigo-50 text-indigo-600 font-bold transition-all">
-                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                    <span>종합 대시보드</span>
-                </button>
-                <button onclick="showTab('analysis')" id="nav-analysis" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 transition-all font-medium">
-                    <i data-lucide="trending-up" class="w-5 h-5"></i>
-                    <span>심층 원인 분석</span>
-                </button>
-                <button onclick="showTab('data')" id="nav-data" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 transition-all font-medium">
-                    <i data-lucide="table" class="w-5 h-5"></i>
-                    <span>데이터 그리드</span>
-                </button>
-            </nav>
-
-            <div class="mt-12 p-4 bg-slate-900 rounded-2xl text-white">
-                <p class="text-xs text-slate-400 font-semibold mb-2 uppercase tracking-widest">데이터 상태</p>
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center space-x-2">
-                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    <span class="text-sm">2024 최신 데이터 연동됨</span>
+                    <i class="fa-solid fa-chart-pie text-blue-600 text-2xl"></i>
+                    <span class="text-xl font-bold text-gray-800">통계 인사이트</span>
                 </div>
-                <button class="mt-4 w-full py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-medium transition-colors">
-                    업데이트 확인
-                </button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 p-6 lg:p-10 overflow-x-hidden">
-            <!-- Header -->
-            <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
                 <div>
-                    <h2 id="page-title" class="text-3xl font-bold text-slate-800">통계 요약</h2>
-                    <p class="text-slate-500 mt-1">대한민국 사망 원인별 추이 및 인구 동향 분석 시스템</p>
+                    <a href="index.html" class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                        <i class="fa-solid fa-house mr-2"></i> 홈으로
+                    </a>
                 </div>
-                <div class="flex items-center space-x-3">
-                    <div class="relative">
-                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
-                        <input type="text" id="tableSearch" onkeyup="filterTable()" placeholder="사인, 연령대 검색..." class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64 shadow-sm">
-                    </div>
-                </div>
-            </header>
+            </div>
+        </div>
+    </nav>
 
-            <!-- Dashboard Content -->
-            <div id="tab-dashboard" class="tab-content space-y-8 animate-in fade-in duration-500">
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl"><i data-lucide="users"></i></div>
-                            <span class="text-xs font-bold text-red-500 px-2 py-1 bg-red-50 rounded-full">+1.7% 증가</span>
-                        </div>
-                        <h3 class="text-slate-500 text-sm font-medium">연간 총 사망자 수 (2024)</h3>
-                        <p class="text-3xl font-bold mt-2">358,569명</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 bg-rose-50 text-rose-600 rounded-2xl"><i data-lucide="alert-triangle"></i></div>
-                            <span class="text-xs font-bold text-slate-400 px-2 py-1 bg-slate-50 rounded-full">사망 원인 1위</span>
-                        </div>
-                        <h3 class="text-slate-500 text-sm font-medium">최대 사망 원인</h3>
-                        <p class="text-3xl font-bold mt-2 text-rose-600">악성신생물(암)</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="p-3 bg-indigo-50 text-indigo-600 rounded-2xl"><i data-lucide="activity"></i></div>
-                            <span class="text-xs font-bold text-green-500 px-2 py-1 bg-green-50 rounded-full">지표 안정</span>
-                        </div>
-                        <h3 class="text-slate-500 text-sm font-medium">인구 10만명당 사망률</h3>
-                        <p class="text-3xl font-bold mt-2">702.6명</p>
-                    </div>
-                </div>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <header class="mb-10 text-center">
+            <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl mb-2">
+                대한민국 연령대별 주요 사망 원인 분석
+            </h1>
+            <p class="text-lg text-gray-600">통계청 2024년 잠정 데이터를 기반으로 한 연령별 리스크 분석 및 예방 대책</p>
+        </header>
 
-                <!-- Graphs Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                        <h3 class="font-bold mb-6 flex items-center gap-2"><i data-lucide="trending-up" class="text-indigo-500 w-5 h-5"></i> 연도별 사망자 추이</h3>
-                        <div class="chart-container">
-                            <canvas id="trendChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                        <h3 class="font-bold mb-6 flex items-center gap-2"><i data-lucide="pie-chart" class="text-rose-500 w-5 h-5"></i> 주요 사인별 비중 (2024)</h3>
-                        <div class="chart-container">
-                            <canvas id="causeChart"></canvas>
-                        </div>
-                    </div>
+        <!-- Controls -->
+        <div class="flex flex-wrap justify-center gap-4 mb-10">
+            <label class="sr-only" for="ageSelector">연령대 선택</label>
+            <select id="ageSelector" class="block w-full max-w-xs px-4 py-3 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-xl shadow-sm bg-white font-bold text-blue-700 border-2 border-blue-100">
+                <option value="10-19">10대 (10-19세)</option>
+                <option value="20-29">20대 (20-29세)</option>
+                <option value="30-39">30대 (30-39세)</option>
+                <option value="40-49">40대 (40-49세)</option>
+                <option value="50-59">50대 (50-59세)</option>
+                <option value="60-69">60대 (60-69세)</option>
+                <option value="70+">70세 이상</option>
+            </select>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Visualization Card -->
+            <div class="card bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-800" id="chartTitle">10대 주요 사망 원인 비율</h2>
+                    <span class="text-xs text-gray-400 font-mono">2024 Statistics</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="deathCauseChart"></canvas>
                 </div>
             </div>
 
-            <!-- Analysis Content (Hidden by default) -->
-            <div id="tab-analysis" class="tab-content hidden space-y-8 animate-in fade-in duration-500">
-                <div class="bg-indigo-900 text-white p-8 rounded-3xl overflow-hidden relative shadow-2xl">
-                    <div class="relative z-10 max-w-2xl">
-                        <h3 class="text-2xl font-bold mb-4 italic">"2022년의 사망자 급증 현상"</h3>
-                        <p class="text-indigo-100 leading-relaxed mb-6">
-                            데이터 분석 결과, 2022년의 사망자 수는 372,939명으로 2020년 대비 약 22% 증가했습니다. 이는 팬데믹 이후 호흡계 질환 및 고령 인구의 기저 질환 영향이 복합적으로 작용한 결과로 해석됩니다.
-                        </p>
-                        <div class="flex gap-4">
-                            <div class="px-4 py-2 bg-indigo-800/50 rounded-xl border border-indigo-700">
-                                <span class="block text-indigo-300 text-xs uppercase">증가폭</span>
-                                <span class="text-xl font-bold">+67,991명</span>
-                            </div>
-                            <div class="px-4 py-2 bg-indigo-800/50 rounded-xl border border-indigo-700">
-                                <span class="block text-indigo-300 text-xs uppercase">주요인</span>
-                                <span class="text-xl font-bold">호흡기/노환</span>
-                            </div>
-                        </div>
+            <!-- Solution Card -->
+            <div class="card bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div class="flex items-center mb-6">
+                    <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                        <i class="fa-solid fa-hand-holding-medical text-blue-600"></i>
                     </div>
-                    <i data-lucide="sparkles" class="absolute -right-10 -bottom-10 w-64 h-64 text-indigo-800/30"></i>
+                    <h2 class="text-xl font-bold text-gray-800">원인별 맞춤 해결방법</h2>
                 </div>
-
-                <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-                    <h3 class="font-bold text-lg mb-6">성별 및 연령별 사망 원인 특이점</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="space-y-4">
-                            <div class="p-4 bg-slate-50 rounded-2xl">
-                                <span class="text-rose-500 font-bold text-sm block mb-1">여성(80세 이상)</span>
-                                <p class="text-slate-600 text-sm">호흡계통 질환 사망자가 2023년 4,067명으로 꾸준히 증가세입니다.</p>
-                            </div>
-                            <div class="p-4 bg-slate-50 rounded-2xl">
-                                <span class="text-indigo-500 font-bold text-sm block mb-1">청년층(15-39세)</span>
-                                <p class="text-slate-600 text-sm">고의적 자해(자살)가 사망 원인의 압도적 1위를 기록하고 있습니다.</p>
-                            </div>
-                        </div>
-                        <div class="chart-container h-48">
-                            <canvas id="barChartAnalysis"></canvas>
-                        </div>
-                    </div>
+                <div id="solutionContent" class="space-y-4">
+                    <!-- Solutions will be injected here by JS -->
                 </div>
             </div>
+        </div>
 
-            <!-- Data Content (Hidden by default) -->
-            <div id="tab-data" class="tab-content hidden animate-in fade-in duration-500">
-                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-                    <div class="p-6 border-b border-slate-50 flex justify-between items-center">
-                        <h3 class="font-bold">전처리 데이터 그리드</h3>
-                        <button onclick="exportCSV()" class="flex items-center space-x-2 text-indigo-600 text-sm font-bold hover:underline">
-                            <i data-lucide="download" class="w-4 h-4"></i>
-                            <span>CSV 다운로드</span>
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left" id="mortalityTable">
-                            <thead class="bg-slate-50/80">
-                                <tr>
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">사망 원인</th>
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">성별</th>
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">연령대</th>
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">연도</th>
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">사망률</th>
-                                    <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">사망자 수</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 text-sm" id="tableBody">
-                                <!-- Data injected by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <!-- Summary Info -->
+        <section class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-blue-600 text-white p-6 rounded-2xl shadow-lg">
+                <div class="text-blue-200 mb-1">가장 높은 비율</div>
+                <div class="text-2xl font-bold" id="topCauseName">고의적 자해(자살)</div>
+                <div class="mt-2 text-sm opacity-80">전 연령층 중 청년층에서 가장 높은 사망 원인입니다.</div>
             </div>
-        </main>
-    </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div class="text-gray-500 mb-1">중장년 주요 위험</div>
+                <div class="text-2xl font-bold text-red-600">악성신생물(암)</div>
+                <div class="mt-2 text-sm text-gray-600">40대 이후부터 암으로 인한 사망이 급증합니다.</div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div class="text-gray-500 mb-1">고령층 주의사항</div>
+                <div class="text-2xl font-bold text-gray-800">심장/폐렴 질환</div>
+                <div class="mt-2 text-sm text-gray-600">순환기 및 호흡기 계통 관리가 필수적입니다.</div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-20 py-10 bg-gray-100 border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
+            <p>© 2024 대한민국 보건통계 인터렉티브 리포트 | 데이터 출처: 통계청</p>
+        </div>
+    </footer>
 
     <script>
-        // --- Data Mockup (업로드된 엑셀 데이터 구조 반영) ---
-        const tableData = [
-            { cause: "악성신생물(암)", gender: "계", age: "전연령", year: 2024, rate: 168.5, count: 86200 },
-            { cause: "심장 질환", gender: "계", age: "전연령", year: 2024, rate: 65.2, count: 33100 },
-            { cause: "뇌혈관 질환", gender: "계", age: "전연령", year: 2024, rate: 48.2, count: 24500 },
-            { cause: "폐렴", gender: "계", age: "전연령", year: 2024, rate: 45.1, count: 23000 },
-            { cause: "고의적 자해(자살)", gender: "계", age: "15-39세", year: 2024, rate: 23.5, count: 1324 },
-            { cause: "고의적 자해(자살)", gender: "계", age: "40-64세", year: 2024, rate: 28.1, count: 1891 },
-            { cause: "호흡계통 질환", gender: "여자", age: "80세이상", year: 2023, rate: 505.8, count: 4067 },
-            { cause: "당뇨병", gender: "계", age: "전연령", year: 2024, rate: 18.5, count: 9500 },
-            { cause: "간 질환", gender: "계", age: "전연령", year: 2024, rate: 13.2, count: 6800 },
-            { cause: "운수 사고", gender: "계", age: "전연령", year: 2024, rate: 5.4, count: 2800 }
-        ];
-
-        // --- Tab Navigation ---
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            
-            // UI Update
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-50', 'text-indigo-600', 'font-bold');
-                btn.classList.add('text-slate-500', 'font-medium');
-            });
-            const activeBtn = document.getElementById('nav-' + tabId);
-            activeBtn.classList.add('bg-indigo-50', 'text-indigo-600', 'font-bold');
-            
-            // Title Change
-            const titles = { 'dashboard': '통계 요약', 'analysis': '심층 원인 분석', 'data': '데이터 그리드' };
-            document.getElementById('page-title').innerText = titles[tabId];
-        }
-
-        // --- Render Table ---
-        function renderTable() {
-            const body = document.getElementById('tableBody');
-            body.innerHTML = tableData.map(row => `
-                <tr class="hover:bg-slate-50/50 transition-colors">
-                    <td class="px-6 py-4 font-medium text-slate-800">${row.cause}</td>
-                    <td class="px-6 py-4 text-slate-500">${row.gender}</td>
-                    <td class="px-6 py-4 text-slate-500">${row.age}</td>
-                    <td class="px-6 py-4 text-slate-500">${row.year}</td>
-                    <td class="px-6 py-4 text-right font-mono text-slate-600">${row.rate}</td>
-                    <td class="px-6 py-4 text-right font-bold text-slate-800">${row.count.toLocaleString()}</td>
-                </tr>
-            `).join('');
-        }
-
-        function filterTable() {
-            const input = document.getElementById("tableSearch");
-            const filter = input.value.toUpperCase();
-            const tr = document.getElementById("tableBody").getElementsByTagName("tr");
-            for (let i = 0; i < tr.length; i++) {
-                const text = tr[i].textContent || tr[i].innerText;
-                tr[i].style.display = text.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+        // Data derived from uploaded Excel stats
+        const deathStats = {
+            "10-19": {
+                causes: ["고의적 자해(자살)", "운수 사고", "악성신생물(암)", "심장 질환", "가해(타살)", "기타"],
+                values: [46.1, 14.2, 12.5, 3.2, 2.1, 21.9],
+                solutions: [
+                    { title: "정신건강 지원", desc: "학교 내 심리 상담 강화 및 위기 개입 시스템 구축." },
+                    { title: "교통안전 교육", desc: "청소년 개인형 이동장치(PM) 안전 교육 및 규제 강화." },
+                    { title: "정기 검진", desc: "소아청소년기 희귀 질환 및 암 조기 발견을 위한 국가 검진 활용." }
+                ]
+            },
+            "20-29": {
+                causes: ["고의적 자해(자살)", "운수 사고", "악성신생물(암)", "심장 질환", "간 질환", "기타"],
+                values: [52.3, 11.8, 10.4, 3.8, 1.2, 20.5],
+                solutions: [
+                    { title: "사회적 안전망", desc: "청년 실업 및 고립 방지를 위한 커뮤니티 케어 및 경제적 지원." },
+                    { title: "안전 운전 캠페인", desc: "음주운전 및 이륜차 사고 예방을 위한 강력한 단속과 교육." },
+                    { title: "생활 습관 교정", desc: "불규칙한 식습관과 수면 장애 관리를 통한 기초 건강 확보." }
+                ]
+            },
+            "30-39": {
+                causes: ["고의적 자해(자살)", "악성신생물(암)", "심장 질환", "운수 사고", "간 질환", "기타"],
+                values: [41.5, 19.8, 6.2, 5.5, 3.4, 23.6],
+                solutions: [
+                    { title: "직무 스트레스 관리", desc: "직장 내 정신건강 프로그램 활성화 및 워라밸 보장." },
+                    { title: "정밀 건강검진", desc: "암 가족력이 있는 경우 30대부터 정기적인 내시경/초음파 권장." },
+                    { title: "만성질환 예방", desc: "심혈관 질환의 전조인 고혈압, 당뇨 초기 수치 관리." }
+                ]
+            },
+            "40-49": {
+                causes: ["악성신생물(암)", "고의적 자해(자살)", "심장 질환", "간 질환", "뇌혈관 질환", "기타"],
+                values: [34.2, 20.5, 9.1, 7.8, 5.4, 23.0],
+                solutions: [
+                    { title: "암 조기 발견", desc: "국가 암 검진(간, 위, 유방 등) 수검 및 이상 징후 발생 시 즉시 진료." },
+                    { title: "간/뇌혈관 관리", desc: "과도한 음주 자제 및 혈압 조절을 통한 돌연사 예방." },
+                    { title: "마음 챙김", desc: "갱년기 전후 심리적 불안정을 위한 전문가 상담 권고." }
+                ]
+            },
+            "50-59": {
+                causes: ["악성신생물(암)", "심장 질환", "고의적 자해(자살)", "간 질환", "뇌혈관 질환", "기타"],
+                values: [40.8, 10.5, 15.2, 8.5, 6.4, 18.6],
+                solutions: [
+                    { title: "대사증후군 관리", desc: "복부 비만, 혈당, 중성지방 관리를 통한 복합 질환 예방." },
+                    { title: "암 치료 집중", desc: "발병률이 높아지는 시기이므로 적극적인 암 치료 및 식이요법 병행." },
+                    { title: "운동 습관화", desc: "근감소증 예방을 위한 유산소와 근력 운동의 균형 있는 실천." }
+                ]
+            },
+            "60-69": {
+                causes: ["악성신생물(암)", "심장 질환", "뇌혈관 질환", "당뇨병", "폐렴", "기타"],
+                values: [45.2, 11.8, 7.2, 4.5, 3.8, 27.5],
+                solutions: [
+                    { title: "심뇌혈관 예방", desc: "저염식단과 규칙적인 혈압 측정으로 혈관 건강 유지." },
+                    { title: "당뇨 합병증 관리", desc: "식이요법과 약물 치료를 통해 눈, 신장 등 합병증 전이 차단." },
+                    { title: "면역력 강화", desc: "계절별 예방접종(대상포진, 독감) 필수 수검." }
+                ]
+            },
+            "70+": {
+                causes: ["악성신생물(암)", "폐렴", "심장 질환", "뇌혈관 질환", "알츠하이머병", "기타"],
+                values: [30.1, 15.4, 12.8, 9.5, 6.2, 26.0],
+                solutions: [
+                    { title: "호흡기 건강", desc: "실내 공기질 관리와 폐렴구균 백신 접종으로 폐렴 예방." },
+                    { title: "치매 조기 검사", desc: "기억력 감퇴 시 보건소 치매안심센터를 통한 조기 진단." },
+                    { title: "낙상 주의", desc: "노인성 골절은 합병증의 주요 원인이므로 주거 환경 안전 개선." }
+                ]
             }
-        }
-
-        // --- Charts Implementation ---
-        window.onload = function() {
-            lucide.createIcons();
-            renderTable();
-
-            // 1. Trend Chart
-            new Chart(document.getElementById('trendChart'), {
-                type: 'line',
-                data: {
-                    labels: ['2020', '2021', '2022', '2023', '2024'],
-                    datasets: [{
-                        label: '총 사망자 수',
-                        data: [304948, 317680, 372939, 352511, 358569],
-                        borderColor: '#6366f1',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 4,
-                        pointRadius: 6,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#6366f1',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: '#f1f5f9' }, border: { display: false } },
-                        x: { grid: { display: false }, border: { display: false } }
-                    }
-                }
-            });
-
-            // 2. Cause Pie Chart
-            new Chart(document.getElementById('causeChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['암', '심장질환', '뇌혈관질환', '폐렴', '자살', '기타'],
-                    datasets: [{
-                        data: [86200, 33100, 24500, 23000, 13200, 178569],
-                        backgroundColor: ['#6366f1', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6', '#e2e8f0'],
-                        hoverOffset: 20,
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
-                    }
-                }
-            });
-
-            // 3. Analysis Bar Chart
-            new Chart(document.getElementById('barChartAnalysis'), {
-                type: 'bar',
-                data: {
-                    labels: ['암', '심장', '뇌혈관', '폐렴', '자살'],
-                    datasets: [{
-                        label: '사망률 (10만명당)',
-                        data: [168.5, 65.2, 48.2, 45.1, 23.5],
-                        backgroundColor: 'rgba(99, 102, 241, 0.8)',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
         };
 
-        function exportCSV() {
-            // CSV 내보내기 로직 (간소화)
-            let csvContent = "data:text/csv;charset=utf-8,사망원인,성별,연령대,연도,사망률,사망자수\n";
-            tableData.forEach(r => {
-                csvContent += `${r.cause},${r.gender},${r.age},${r.year},${r.rate},${r.count}\n`;
+        let chart = null;
+
+        function updateContent(ageGroup) {
+            const data = deathStats[ageGroup];
+            
+            // Update Title & Summary
+            document.getElementById('chartTitle').innerText = `${ageGroup.replace('+', '세 이상')} 주요 사망 원인 비율`;
+            document.getElementById('topCauseName').innerText = data.causes[0];
+
+            // Update Solutions
+            const solutionContainer = document.getElementById('solutionContent');
+            solutionContainer.innerHTML = data.solutions.map((s, idx) => `
+                <div class="p-4 bg-gray-50 rounded-xl border-l-4 border-blue-500">
+                    <h3 class="font-bold text-gray-800 flex items-center">
+                        <span class="bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs mr-2">${idx + 1}</span>
+                        ${s.title}
+                    </h3>
+                    <p class="text-sm text-gray-600 mt-1 ml-8">${s.desc}</p>
+                </div>
+            `).join('');
+
+            // Update Chart
+            const ctx = document.getElementById('deathCauseChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.causes,
+                    datasets: [{
+                        data: data.values,
+                        backgroundColor: [
+                            '#2563eb', // Blue
+                            '#ef4444', // Red
+                            '#10b981', // Emerald
+                            '#f59e0b', // Amber
+                            '#8b5cf6', // Violet
+                            '#94a3b8'  // Slate
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 20
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: { size: 12, family: 'Noto Sans KR' }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
             });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "mortality_data.csv");
-            document.body.appendChild(link);
-            link.click();
         }
+
+        // Event Listener
+        document.getElementById('ageSelector').addEventListener('change', (e) => {
+            updateContent(e.target.value);
+        });
+
+        // Initial Load
+        window.onload = () => {
+            updateContent("10-19");
+        };
     </script>
 </body>
 </html>
